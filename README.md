@@ -5,14 +5,22 @@
 ## ScreenShots
 
 <div align:left;display:inline;>
-<img width="300" height="540" src="https://github.com/qingmei2/MVVM-Rhine/blob/master/screenshots/login.png"/>
-<img width="300" height="540" src="https://github.com/qingmei2/MVVM-Rhine/blob/master/screenshots/home.png"/>
+<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
+<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/home.png"/>
 </div>
 
 <div align:left;display:inline;>
-<img width="300" height="540" src="https://github.com/qingmei2/MVVM-Rhine/blob/master/screenshots/repos.png"/>
-<img width="300" height="540" src="https://github.com/qingmei2/MVVM-Rhine/blob/master/screenshots/me.png"/>
+<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/repos.png"/>
+<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
 </div>
+
+## Summary
+
+> This repo is based on an Android ported version of the **Model-View-Intent architecture** and uses RxJava2 to implement the reactive caracteristic of the architecture.
+
+> The **MVI** architecture embraces reactive and functional programming. The two main components of this architecture, the View and the ViewModel can be seen as functions, taking an input and emiting outputs to each other. The View takes input from the ViewModel and emit back intents. The ViewModel takes input from the View and emit back view states. This means the View has only one entry point to forward data to the ViewModel and vice-versa, the ViewModel only has one way to pass information to the View.
+
+![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
 ## Libraries
 
@@ -63,6 +71,12 @@
 * [Glide: An image loading and caching library for Android focused on smooth scrolling](https://github.com/bumptech/glide)
 
 * [Timber: A logger with a small, extensible API which provides utility on top of Android's normal Log class.](https://github.com/JakeWharton/timber)
+
+## Thanks to
+
+:art: The UI design of this project refers to [gitme](https://github.com/flutterchina/gitme).
+
+:star: Thanks for [oldergod/android-architecture](https://github.com/oldergod/android-architecture)'s guidance during development.
 
 ## License
 
