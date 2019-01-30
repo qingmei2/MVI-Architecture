@@ -1,1 +1,1 @@
-include ':app', ':mvi'
+include ':sample', ':mvi'
