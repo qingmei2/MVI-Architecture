@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">MVI-Rhine</string>
+    <string name="app_name">MyGithub-MVI</string>
+
+    <string name="main_nav_home">Home</string>
+    <string name="main_nav_repos">Repos</string>
+    <string name="main_nav_profile">Me</string>
+
+    <string name="login_tips">Sign in to GitHub</string>
+    <string name="login_hint_username">Username or email address</string>
+    <string name="login_hint_password">Password</string>
+    <string name="login_sign_in">Sign in</string>
+
+    <string name="repos_filter_created">Sort by created</string>
+    <string name="repos_filter_letter">Sort by letter</string>
+    <string name="repos_filter_update">Sort by update</string>
+
+    <string name="common_loading_empty">it\'s empty here</string>
+    <string name="common_loading_error">network error</string>
 </resources>
