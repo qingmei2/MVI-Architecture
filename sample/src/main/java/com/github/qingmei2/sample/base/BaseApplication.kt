@@ -4,10 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.github.qingmei2.mvi.logger.initLogger
 import com.github.qingmei2.sample.BuildConfig
-import com.github.qingmei2.sample.di.dbModule
-import com.github.qingmei2.sample.di.httpClientModule
-import com.github.qingmei2.sample.di.prefsModule
-import com.github.qingmei2.sample.di.serviceModule
+import com.github.qingmei2.sample.di.*
 import com.squareup.leakcanary.LeakCanary
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -27,6 +24,7 @@ open class BaseApplication : Application(), KodeinAware {
         import(dbModule)
         import(httpClientModule)
         import(prefsModule)
+        import(schedulersModule)
     }
 
     override fun onCreate() {

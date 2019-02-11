@@ -5,17 +5,15 @@ import com.github.qingmei2.mvi.base.intent.IIntent
 sealed class LoginIntent : IIntent {
 
     data class LoginClicksIntent(
-        val username: String?,
-        val password: String?
+            val username: String?,
+            val password: String?
     ) : LoginIntent()
 
     data class EditUsernameIntent(
-        val username: String
+            val username: String
     ) : LoginIntent()
 
     data class EditPasswordIntent(
-        val password: String
+            val password: String
     ) : LoginIntent()
-
-    object LoginSuccessIntent : LoginIntent()
 }
