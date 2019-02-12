@@ -17,24 +17,24 @@ val loginKodeinModule = Kodein.Module(LOGIN_MODULE_TAG) {
 
     bind<LoginViewModel>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
         ViewModelProviders
-                .of(context, object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                        return LoginViewModel(instance()) as T
-                    }
-                })
-                .get(LoginViewModel::class.java)
+            .of(context, object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    return LoginViewModel(instance()) as T
+                }
+            })
+            .get(LoginViewModel::class.java)
     }
 
     bind<LoginRemoteDataSource>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
         LoginRemoteDataSource(
-                serviceManager = instance(),
-                schedulers = instance()
+            serviceManager = instance(),
+            schedulers = instance()
         )
     }
 
     bind<LoginLocalDataSource>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
         LoginLocalDataSource(
-                prefs = instance()
+            prefs = instance()
         )
     }
 

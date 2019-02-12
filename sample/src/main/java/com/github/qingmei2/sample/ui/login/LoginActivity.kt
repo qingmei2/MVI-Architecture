@@ -11,17 +11,26 @@ import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_login.*
+import org.kodein.di.Kodein
+import org.kodein.di.generic.instance
 
 class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
 
+    override val kodein: Kodein = Kodein.lazy {
+        extend(parentKodein)
+        import(loginKodeinModule)
+    }
+
     private val editUsernameIntentPublisher =
-            PublishSubject.create<LoginIntent.EditUsernameIntent>()
+        PublishSubject.create<LoginIntent.EditUsernameIntent>()
     private val editPasswordIntentPublisher =
-            PublishSubject.create<LoginIntent.EditPasswordIntent>()
+        PublishSubject.create<LoginIntent.EditPasswordIntent>()
     private val loginClicksIntentPublisher =
-            PublishSubject.create<LoginIntent.LoginClicksIntent>()
+        PublishSubject.create<LoginIntent.LoginClicksIntent>()
 
     override val layoutId: Int = R.layout.activity_login
+
+    private val viewModel: LoginViewModel by instance()
 
     override fun onStart() {
         super.onStart()
@@ -30,9 +39,9 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
-            editPasswordIntentPublisher,
-            editUsernameIntentPublisher,
-            loginClicksIntentPublisher
+        editPasswordIntentPublisher,
+        editUsernameIntentPublisher,
+        loginClicksIntentPublisher
     )
 
     override fun render(state: LoginViewState) {
@@ -52,21 +61,21 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
 
     private fun bind() {
         tvUsername.textChanges()
-                .map { LoginIntent.EditUsernameIntent(it.toString()) }
-                .autoDisposable(scopeProvider)
-                .subscribe(editUsernameIntentPublisher)
+            .map { LoginIntent.EditUsernameIntent(it.toString()) }
+            .autoDisposable(scopeProvider)
+            .subscribe(editUsernameIntentPublisher)
         tvPassword.textChanges()
-                .map { LoginIntent.EditPasswordIntent(it.toString()) }
-                .autoDisposable(scopeProvider)
-                .subscribe(editPasswordIntentPublisher)
+            .map { LoginIntent.EditPasswordIntent(it.toString()) }
+            .autoDisposable(scopeProvider)
+            .subscribe(editPasswordIntentPublisher)
         btnLogin.clicks()
-                .map {
-                    LoginIntent.LoginClicksIntent(
-                            username = tvUsername.text.toString(),
-                            password = tvPassword.text.toString()
-                    )
-                }
-                .autoDisposable(scopeProvider)
-                .subscribe(loginClicksIntentPublisher)
+            .map {
+                LoginIntent.LoginClicksIntent(
+                    username = tvUsername.text.toString(),
+                    password = tvPassword.text.toString()
+                )
+            }
+            .autoDisposable(scopeProvider)
+            .subscribe(loginClicksIntentPublisher)
     }
 }
