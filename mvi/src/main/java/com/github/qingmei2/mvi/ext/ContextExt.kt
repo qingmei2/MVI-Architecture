@@ -1,4 +1,4 @@
-package com.qingmei2.rhine.ext
+package com.github.qingmei2.mvi.ext
 
 import android.content.Context
 import android.content.Intent

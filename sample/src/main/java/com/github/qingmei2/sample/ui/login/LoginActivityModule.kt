@@ -1,8 +1,6 @@
 package com.github.qingmei2.sample.ui.login
 
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import org.kodein.di.Kodein
 import org.kodein.di.android.x.AndroidLifecycleScope
@@ -17,28 +15,30 @@ val loginKodeinModule = Kodein.Module(LOGIN_MODULE_TAG) {
 
     bind<LoginViewModel>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
         ViewModelProviders
-            .of(context, object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    return LoginViewModel(instance()) as T
-                }
-            })
-            .get(LoginViewModel::class.java)
+            .of(context, LoginViewModelFactory.getInstance(instance()))[LoginViewModel::class.java]
     }
 
-    bind<LoginRemoteDataSource>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
+    bind<LoginActionProcessorHolder>() with singleton {
+        LoginActionProcessorHolder(
+            repository = instance(),
+            schedulers = instance()
+        )
+    }
+
+    bind<LoginRemoteDataSource>() with singleton {
         LoginRemoteDataSource(
             serviceManager = instance(),
             schedulers = instance()
         )
     }
 
-    bind<LoginLocalDataSource>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
+    bind<LoginLocalDataSource>() with singleton {
         LoginLocalDataSource(
             prefs = instance()
         )
     }
 
-    bind<LoginDataSourceRepository>() with scoped<AppCompatActivity>(AndroidLifecycleScope).singleton {
+    bind<LoginDataSourceRepository>() with singleton {
         LoginDataSourceRepository(instance(), instance())
     }
 }

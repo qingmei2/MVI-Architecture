@@ -15,15 +15,18 @@ interface SchedulerProvider {
 
 class SchedulerProviderProxy : SchedulerProvider {
 
-    override fun io(): Scheduler {
-        return Schedulers.io()
-    }
+    override fun io(): Scheduler = Schedulers.io()
 
-    override fun ui(): Scheduler {
-        return AndroidSchedulers.mainThread()
-    }
+    override fun ui(): Scheduler = AndroidSchedulers.mainThread()
 
-    override fun computation(): Scheduler {
-        return Schedulers.computation()
-    }
+    override fun computation(): Scheduler = Schedulers.computation()
+}
+
+class TestSchedulerProvider() : SchedulerProvider {
+
+    override fun io(): Scheduler = Schedulers.io()
+
+    override fun ui(): Scheduler = Schedulers.io()
+
+    override fun computation(): Scheduler = Schedulers.computation()
 }
