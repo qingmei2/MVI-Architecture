@@ -8,11 +8,11 @@ import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
-import java.util.function.BiFunction
 
 class LoginViewModel(
-    private val processorHolder: LoginActionProcessorHolder
+        private val processorHolder: LoginActionProcessorHolder
 ) : BaseViewModel<LoginIntent, LoginViewState>() {
 
     private val intentsSubject: PublishSubject<LoginIntent> = PublishSubject.create()
@@ -28,8 +28,8 @@ class LoginViewModel(
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
                 Observable.merge(
-                    shared.ofType(LoginIntent.InitialIntent::class.java).take(1),
-                    shared.notOfType(LoginIntent.InitialIntent::class.java)
+                        shared.ofType(LoginIntent.InitialIntent::class.java).take(1),
+                        shared.notOfType(LoginIntent.InitialIntent::class.java)
                 )
             }
         }
@@ -39,32 +39,19 @@ class LoginViewModel(
      */
     private fun compose(): Observable<LoginViewState> {
         return intentsSubject
-            .compose(intentFilter)
-            .map(this::actionFromIntent)
-            .compose(processorHolder.actionProcessor)
-            // Cache each state and pass it to the reducer to create a new state from
-            // the previous cached one and the latest Result emitted from the action processor.
-            // The Scan operator is used here for the caching.
-            .scan(LoginViewState.idle(), reducer)
-            // When a reducer just emits previousState, there's no reason to call render. In fact,
-            // redrawing the UI in cases like this can cause jank (e.g. messing up snackbar animations
-            // by showing the same snackbar twice in rapid succession).
-            .distinctUntilChanged()
-            // Emit the last one event of the stream on subscription
-            // Useful when a View rebinds to the ViewModel after rotation.
-            .replay(1)
-            // Create the stream on creation without waiting for anyone to subscribe
-            // This allows the stream to stay alive even when the UI disconnects and
-            // match the stream's lifecycle to the ViewModel's one.
-            .autoConnect(0)
+                .compose(intentFilter)
+                .map(this::actionFromIntent)
+                .compose(processorHolder.actionProcessor)
+                .scan(LoginViewState.idle(), reducer)
+                .distinctUntilChanged()
+                .replay(1)
+                .autoConnect(0)
     }
 
     private fun actionFromIntent(intent: LoginIntent): LoginAction {
         return when (intent) {
             is LoginIntent.InitialIntent -> LoginAction.InitialUiAction
             is LoginIntent.LoginClicksIntent -> LoginAction.ClickLoginAction(intent.username, intent.password)
-            is LoginIntent.EditPasswordIntent -> LoginAction.EditPasswordAction(intent.password)
-            is LoginIntent.EditUsernameIntent -> LoginAction.EditUsernameAction(intent.username)
         }
     }
 
@@ -74,25 +61,31 @@ class LoginViewModel(
             when (result) {
                 is LoginResult.ClickLoginResult -> when (result) {
                     is LoginResult.ClickLoginResult.Success -> {
-
+                        previousState.copy(
+                                isLoading = false,
+                                uiEvents = LoginViewState.LoginUiEvents.JumpMain(result.user)
+                        )
                     }
-                    is LoginResult.ClickLoginResult.Failure -> {
-
-                    }
-                    is LoginResult.ClickLoginResult.InFlight -> {
-
-                    }
+                    is LoginResult.ClickLoginResult.Failure -> previousState.copy(isLoading = false, errors = result.error)
+                    is LoginResult.ClickLoginResult.InFlight -> previousState.copy(isLoading = true)
                 }
                 is LoginResult.AutoLoginInfoResult -> when (result) {
                     is LoginResult.AutoLoginInfoResult.Success -> {
-
+                        previousState.copy(
+                                isLoading = false,
+                                uiEvents = LoginViewState.LoginUiEvents.TryAutoLogin(
+                                        loginEntity = result.user,
+                                        autoLogin = result.autoLogin
+                                )
+                        )
                     }
-                    is LoginResult.AutoLoginInfoResult.Failure -> {
-
+                    is LoginResult.AutoLoginInfoResult.NoUserData -> {
+                        previousState.copy(
+                                isLoading = false
+                        )
                     }
-                    is LoginResult.AutoLoginInfoResult.InFlight -> {
-
-                    }
+                    is LoginResult.AutoLoginInfoResult.Failure -> previousState.copy(isLoading = false, errors = result.error)
+                    is LoginResult.AutoLoginInfoResult.InFlight -> previousState.copy(isLoading = true)
                 }
             }
         }
@@ -101,12 +94,12 @@ class LoginViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class LoginViewModelFactory private constructor(
-    private val processorHolder: LoginActionProcessorHolder
+        private val processorHolder: LoginActionProcessorHolder
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        LoginViewModel(processorHolder) as T
+            LoginViewModel(processorHolder) as T
 
     companion object :
-        SingletonHolderSingleArg<LoginViewModelFactory, LoginActionProcessorHolder>(::LoginViewModelFactory)
+            SingletonHolderSingleArg<LoginViewModelFactory, LoginActionProcessorHolder>(::LoginViewModelFactory)
 }

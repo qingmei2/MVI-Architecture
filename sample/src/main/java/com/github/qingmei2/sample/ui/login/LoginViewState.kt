@@ -1,32 +1,31 @@
 package com.github.qingmei2.sample.ui.login
 
 import com.github.qingmei2.mvi.base.viewstate.IViewState
+import com.github.qingmei2.sample.entity.LoginEntity
+import com.github.qingmei2.sample.entity.LoginUser
 
 data class LoginViewState(
-    val editUsername: String?,
-    val editPassword: String?,
-    val autoLogin: Boolean,
-    val isLoading: Boolean,
-    val errors: Throwable?,
-    val uiEvents: LoginUiEvents?
+        val isLoading: Boolean,
+        val errors: Throwable?,
+        val uiEvents: LoginUiEvents?
 ) : IViewState {
 
-    enum class LoginUiEvents {
+    sealed class LoginUiEvents {
 
-        JUMP_MAIN
+        data class JumpMain(val loginUser: LoginUser) : LoginUiEvents()
+
+        data class TryAutoLogin(
+                val loginEntity: LoginEntity,
+                val autoLogin: Boolean
+        ) : LoginUiEvents()
     }
 
     companion object {
 
-        fun idle(): LoginViewState {
-            return LoginViewState(
-                editUsername = "",
-                editPassword = "",
-                autoLogin = true,
+        fun idle(): LoginViewState = LoginViewState(
                 isLoading = false,
                 errors = null,
                 uiEvents = null
-            )
-        }
+        )
     }
 }

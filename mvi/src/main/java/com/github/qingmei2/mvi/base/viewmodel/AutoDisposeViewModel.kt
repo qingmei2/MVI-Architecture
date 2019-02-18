@@ -22,8 +22,7 @@ import com.uber.autodispose.lifecycle.LifecycleScopeProvider
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
-open class AutoDisposeViewModel : ViewModel(), IViewModel,
-    LifecycleScopeProvider<AutoDisposeViewModel.ViewModelEvent> {
+open class AutoDisposeViewModel : ViewModel(), LifecycleScopeProvider<AutoDisposeViewModel.ViewModelEvent> {
 
 
     // Subject backing the auto disposing of subscriptions.
@@ -82,7 +81,7 @@ open class AutoDisposeViewModel : ViewModel(), IViewModel,
             when (event) {
                 ViewModelEvent.CREATED -> ViewModelEvent.CLEARED
                 else -> throw LifecycleEndedException(
-                    "Cannot bind to ViewModel lifecycle after onCleared."
+                        "Cannot bind to ViewModel lifecycle after onCleared."
                 )
             }
         }

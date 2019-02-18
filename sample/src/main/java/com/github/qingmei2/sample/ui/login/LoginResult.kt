@@ -6,9 +6,9 @@ import com.github.qingmei2.sample.entity.LoginUser
 sealed class LoginResult {
 
     sealed class AutoLoginInfoResult : LoginResult() {
-        data class Success(val user: LoginEntity) : AutoLoginInfoResult()
+        data class Success(val user: LoginEntity, val autoLogin: Boolean) : AutoLoginInfoResult()
         data class Failure(val error: Throwable) : AutoLoginInfoResult()
-        object NoAutoLogin : AutoLoginInfoResult()
+        object NoUserData : AutoLoginInfoResult()
         object InFlight : AutoLoginInfoResult()
     }
 

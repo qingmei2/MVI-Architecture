@@ -3,10 +3,11 @@ package com.github.qingmei2.sample.ui.login
 import android.content.Intent
 import android.view.View
 import com.github.qingmei2.mvi.base.view.activity.BaseActivity
+import com.github.qingmei2.mvi.ext.toast
 import com.github.qingmei2.sample.R
+import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.ui.main.MainActivity
 import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.widget.textChanges
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -21,12 +22,8 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
         import(loginKodeinModule)
     }
 
-    private val editUsernameIntentPublisher =
-        PublishSubject.create<LoginIntent.EditUsernameIntent>()
-    private val editPasswordIntentPublisher =
-        PublishSubject.create<LoginIntent.EditPasswordIntent>()
     private val loginClicksIntentPublisher =
-        PublishSubject.create<LoginIntent.LoginClicksIntent>()
+            PublishSubject.create<LoginIntent.LoginClicksIntent>()
 
     override val layoutId: Int = R.layout.activity_login
 
@@ -36,20 +33,41 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
         super.onStart()
 
         bind()
+
+        viewModel.processIntents(intents())
     }
 
     override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
-        editPasswordIntentPublisher,
-        editUsernameIntentPublisher,
-        loginClicksIntentPublisher
+            loginClicksIntentPublisher
     )
+
+    private fun bind() {
+        btnLogin.clicks()
+                .map {
+                    LoginIntent.LoginClicksIntent(
+                            username = tvUsername.text.toString(),
+                            password = tvPassword.text.toString()
+                    )
+                }
+                .autoDisposable(scopeProvider)
+                .subscribe(loginClicksIntentPublisher)
+    }
 
     override fun render(state: LoginViewState) {
         when (state.uiEvents) {
-            LoginViewState.LoginUiEvents.JUMP_MAIN -> {
+            is LoginViewState.LoginUiEvents.JumpMain -> {
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
                 return
+            }
+            is LoginViewState.LoginUiEvents.TryAutoLogin -> {
+                val username = state.uiEvents.loginEntity.username
+                val password = state.uiEvents.loginEntity.password
+                tvUsername.setText(username.toCharArray(), 0, username.length)
+                tvPassword.setText(password.toCharArray(), 0, password.length)
+                if (state.uiEvents.autoLogin) {
+                    loginClicksIntentPublisher.onNext(LoginIntent.LoginClicksIntent(username, password))
+                }
             }
         }
 
@@ -57,25 +75,16 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
             true -> View.VISIBLE
             false -> View.GONE
         }
-    }
 
-    private fun bind() {
-        tvUsername.textChanges()
-            .map { LoginIntent.EditUsernameIntent(it.toString()) }
-            .autoDisposable(scopeProvider)
-            .subscribe(editUsernameIntentPublisher)
-        tvPassword.textChanges()
-            .map { LoginIntent.EditPasswordIntent(it.toString()) }
-            .autoDisposable(scopeProvider)
-            .subscribe(editPasswordIntentPublisher)
-        btnLogin.clicks()
-            .map {
-                LoginIntent.LoginClicksIntent(
-                    username = tvUsername.text.toString(),
-                    password = tvPassword.text.toString()
-                )
+        state.errors?.apply {
+            when (this) {
+                is Errors.SimpleError -> {
+                    toast { simpleMessage }
+                }
+                else -> {
+                    toast { localizedMessage }
+                }
             }
-            .autoDisposable(scopeProvider)
-            .subscribe(loginClicksIntentPublisher)
+        }
     }
 }

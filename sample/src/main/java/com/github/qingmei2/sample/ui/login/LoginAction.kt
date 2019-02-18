@@ -7,15 +7,7 @@ sealed class LoginAction : IAction {
     object InitialUiAction : LoginAction()
 
     data class ClickLoginAction(
-        val username: String?,
-        val password: String?
-    ) : LoginAction()
-
-    data class EditUsernameAction(
-        val username: String
-    ) : LoginAction()
-
-    data class EditPasswordAction(
-        val password: String
+            val username: String?,
+            val password: String?
     ) : LoginAction()
 }
