@@ -33,8 +33,6 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
         super.onStart()
 
         bind()
-
-        viewModel.processIntents(intents())
     }
 
     override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
@@ -51,6 +49,12 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
                 }
                 .autoDisposable(scopeProvider)
                 .subscribe(loginClicksIntentPublisher)
+
+        viewModel.states()
+                .autoDisposable(scopeProvider)
+                .subscribe(this::render)
+
+        viewModel.processIntents(intents())
     }
 
     override fun render(state: LoginViewState) {

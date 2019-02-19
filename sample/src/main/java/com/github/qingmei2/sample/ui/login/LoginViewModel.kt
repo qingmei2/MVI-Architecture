@@ -12,7 +12,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 
 class LoginViewModel(
-        private val processorHolder: LoginActionProcessorHolder
+    private val processorHolder: LoginActionProcessorHolder
 ) : BaseViewModel<LoginIntent, LoginViewState>() {
 
     private val intentsSubject: PublishSubject<LoginIntent> = PublishSubject.create()
@@ -28,8 +28,8 @@ class LoginViewModel(
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
                 Observable.merge(
-                        shared.ofType(LoginIntent.InitialIntent::class.java).take(1),
-                        shared.notOfType(LoginIntent.InitialIntent::class.java)
+                    shared.ofType(LoginIntent.InitialIntent::class.java).take(1),
+                    shared.notOfType(LoginIntent.InitialIntent::class.java)
                 )
             }
         }
@@ -39,13 +39,13 @@ class LoginViewModel(
      */
     private fun compose(): Observable<LoginViewState> {
         return intentsSubject
-                .compose(intentFilter)
-                .map(this::actionFromIntent)
-                .compose(processorHolder.actionProcessor)
-                .scan(LoginViewState.idle(), reducer)
-                .distinctUntilChanged()
-                .replay(1)
-                .autoConnect(0)
+            .compose(intentFilter)
+            .map(this::actionFromIntent)
+            .compose(processorHolder.actionProcessor)
+            .scan(LoginViewState.idle(), reducer)
+            .distinctUntilChanged()
+            .replay(1)
+            .autoConnect(0)
     }
 
     private fun actionFromIntent(intent: LoginIntent): LoginAction {
@@ -62,29 +62,35 @@ class LoginViewModel(
                 is LoginResult.ClickLoginResult -> when (result) {
                     is LoginResult.ClickLoginResult.Success -> {
                         previousState.copy(
-                                isLoading = false,
-                                uiEvents = LoginViewState.LoginUiEvents.JumpMain(result.user)
+                            isLoading = false,
+                            uiEvents = LoginViewState.LoginUiEvents.JumpMain(result.user)
                         )
                     }
-                    is LoginResult.ClickLoginResult.Failure -> previousState.copy(isLoading = false, errors = result.error)
+                    is LoginResult.ClickLoginResult.Failure -> previousState.copy(
+                        isLoading = false,
+                        errors = result.error
+                    )
                     is LoginResult.ClickLoginResult.InFlight -> previousState.copy(isLoading = true)
                 }
                 is LoginResult.AutoLoginInfoResult -> when (result) {
                     is LoginResult.AutoLoginInfoResult.Success -> {
                         previousState.copy(
-                                isLoading = false,
-                                uiEvents = LoginViewState.LoginUiEvents.TryAutoLogin(
-                                        loginEntity = result.user,
-                                        autoLogin = result.autoLogin
-                                )
+                            isLoading = false,
+                            uiEvents = LoginViewState.LoginUiEvents.TryAutoLogin(
+                                loginEntity = result.user,
+                                autoLogin = result.autoLogin
+                            )
                         )
                     }
                     is LoginResult.AutoLoginInfoResult.NoUserData -> {
                         previousState.copy(
-                                isLoading = false
+                            isLoading = false
                         )
                     }
-                    is LoginResult.AutoLoginInfoResult.Failure -> previousState.copy(isLoading = false, errors = result.error)
+                    is LoginResult.AutoLoginInfoResult.Failure -> previousState.copy(
+                        isLoading = false,
+                        errors = result.error
+                    )
                     is LoginResult.AutoLoginInfoResult.InFlight -> previousState.copy(isLoading = true)
                 }
             }
@@ -94,12 +100,12 @@ class LoginViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class LoginViewModelFactory private constructor(
-        private val processorHolder: LoginActionProcessorHolder
+    private val processorHolder: LoginActionProcessorHolder
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            LoginViewModel(processorHolder) as T
+        LoginViewModel(processorHolder) as T
 
     companion object :
-            SingletonHolderSingleArg<LoginViewModelFactory, LoginActionProcessorHolder>(::LoginViewModelFactory)
+        SingletonHolderSingleArg<LoginViewModelFactory, LoginActionProcessorHolder>(::LoginViewModelFactory)
 }
