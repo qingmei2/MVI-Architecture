@@ -75,7 +75,7 @@ class LoginViewModel(
                 is LoginResult.AutoLoginInfoResult -> when (result) {
                     is LoginResult.AutoLoginInfoResult.Success -> {
                         previousState.copy(
-                            isLoading = false,
+                            isLoading = true,
                             uiEvents = LoginViewState.LoginUiEvents.TryAutoLogin(
                                 loginEntity = result.user,
                                 autoLogin = result.autoLogin
