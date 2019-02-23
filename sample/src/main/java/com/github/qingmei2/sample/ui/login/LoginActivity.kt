@@ -1,6 +1,5 @@
 package com.github.qingmei2.sample.ui.login
 
-import android.content.Intent
 import android.view.View
 import com.github.qingmei2.mvi.base.view.activity.BaseActivity
 import com.github.qingmei2.mvi.ext.toast
@@ -23,7 +22,7 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     private val loginClicksIntentPublisher =
-            PublishSubject.create<LoginIntent.LoginClicksIntent>()
+        PublishSubject.create<LoginIntent.LoginClicksIntent>()
 
     override val layoutId: Int = R.layout.activity_login
 
@@ -36,23 +35,23 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
-            loginClicksIntentPublisher
+        loginClicksIntentPublisher
     )
 
     private fun bind() {
         btnLogin.clicks()
-                .map {
-                    LoginIntent.LoginClicksIntent(
-                            username = tvUsername.text.toString(),
-                            password = tvPassword.text.toString()
-                    )
-                }
-                .autoDisposable(scopeProvider)
-                .subscribe(loginClicksIntentPublisher)
+            .map {
+                LoginIntent.LoginClicksIntent(
+                    username = tvUsername.text.toString(),
+                    password = tvPassword.text.toString()
+                )
+            }
+            .autoDisposable(scopeProvider)
+            .subscribe(loginClicksIntentPublisher)
 
         viewModel.states()
-                .autoDisposable(scopeProvider)
-                .subscribe(this::render)
+            .autoDisposable(scopeProvider)
+            .subscribe(this::render)
 
         viewModel.processIntents(intents())
     }
@@ -60,7 +59,7 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     override fun render(state: LoginViewState) {
         when (state.uiEvents) {
             is LoginViewState.LoginUiEvents.JumpMain -> {
-                startActivity(Intent(this, MainActivity::class.java))
+                MainActivity.launch(this)
                 finish()
                 return
             }

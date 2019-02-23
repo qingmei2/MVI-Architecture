@@ -3,6 +3,7 @@ package com.github.qingmei2.sample.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.qingmei2.mvi.base.viewmodel.BaseViewModel
+import com.github.qingmei2.mvi.base.viewmodel.IViewModel
 import com.github.qingmei2.mvi.ext.reactivex.notOfType
 import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
@@ -13,7 +14,7 @@ import io.reactivex.subjects.PublishSubject
 
 class LoginViewModel(
     private val processorHolder: LoginActionProcessorHolder
-) : BaseViewModel<LoginIntent, LoginViewState>() {
+) : BaseViewModel(), IViewModel<LoginIntent, LoginViewState> {
 
     private val intentsSubject: PublishSubject<LoginIntent> = PublishSubject.create()
     private val statesObservable: Observable<LoginViewState> = compose()

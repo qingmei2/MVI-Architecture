@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_repos_created"
+        android:title="@string/repos_filter_created"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_repos_letter"
+        android:title="@string/repos_filter_letter"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_repos_update"
+        android:title="@string/repos_filter_update"
+        app:showAsAction="never" />
+</menu>
