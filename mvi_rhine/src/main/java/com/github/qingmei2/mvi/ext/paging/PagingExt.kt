@@ -8,7 +8,7 @@ import io.reactivex.Flowable
 
 object Paging {
 
-    fun <T> buildReactiveStream(
+    fun <T> buildPageKeyedDataSource(
         intPageKeyedDataSource: IntPageKeyedDataSource<T>,
         enablePlaceholders: Boolean = false,
         pageSize: Int = DEFAULT_PAGE_SIZE,
@@ -25,11 +25,10 @@ object Paging {
 
     private fun <T> intPageKeyedDataSource(
         dataSource: IntPageKeyedDataSource<T>
-    ): DataSource.Factory<Int, T> =
-        object : DataSource.Factory<Int, T>() {
+    ): DataSource.Factory<Int, T> = object : DataSource.Factory<Int, T>() {
 
-            override fun create(): DataSource<Int, T> = dataSource
-        }
+        override fun create(): DataSource<Int, T> = dataSource
+    }
 
     private fun <T> buildRxJavaPagedList(
         dataSourceFactory: DataSource.Factory<Int, T>,

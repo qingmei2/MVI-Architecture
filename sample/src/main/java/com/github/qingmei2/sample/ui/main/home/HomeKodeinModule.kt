@@ -13,21 +13,25 @@ val homeKodeinModule = Kodein.Module("homeKodeinModule") {
 
     bind<HomeViewModel>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
         ViewModelProviders
-            .of(
-                context,
-                HomeViewModelFactory.getInstance(instance())
-            )[HomeViewModel::class.java]
+            .of(context, HomeViewModelFactory.getInstance(instance()))[HomeViewModel::class.java]
     }
 
     bind<HomeRepository>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
-        HomeRepository(instance())
+        HomeRepository(
+            remoteDataSource = instance()
+        )
     }
 
     bind<HomeRemoteDataSource>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
-        HomeRemoteDataSource(instance())
+        HomeRemoteDataSource(
+            serviceManager = instance()
+        )
     }
 
     bind<HomeActionProcessorHolder>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
-        HomeActionProcessorHolder(instance(), instance())
+        HomeActionProcessorHolder(
+            repository = instance(),
+            schedulerProvider = instance()
+        )
     }
 }

@@ -19,3 +19,10 @@ fun <T : Any, U : Any> Observable<T>.notOfType(clazz: Class<U>): Observable<T> {
     checkNotNull(clazz) { "clazz is null" }
     return filter { !clazz.isInstance(it) }
 }
+
+@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.NONE)
+fun <T : Any, E : Any> Observable<E>.flatMapErrorActionObservable(): Observable<T> =
+    this.flatMap { action ->
+        Observable.error<T>(IllegalArgumentException("Unknown Action type: $action"))
+    }

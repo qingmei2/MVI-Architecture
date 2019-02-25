@@ -20,7 +20,12 @@ class HomeRepository(
         perPage: Int
     ): Flowable<Either<Errors, List<ReceivedEvent>>> =
         remoteDataSource.queryReceivedEvents(username, pageIndex, perPage)
-
+            .map { list ->
+                when (list.isEmpty()) {
+                    true -> Either.left(Errors.EmptyResultsError)
+                    false -> Either.right(list)
+                }
+            }
 }
 
 class HomeRemoteDataSource(private val serviceManager: ServiceManager) : IRemoteDataSource {
@@ -37,14 +42,8 @@ class HomeRemoteDataSource(private val serviceManager: ServiceManager) : IRemote
         username: String,
         pageIndex: Int,
         perPage: Int
-    ): Flowable<Either<Errors, List<ReceivedEvent>>> =
+    ): Flowable<List<ReceivedEvent>> =
         serviceManager.userService
             .queryReceivedEvents(username, pageIndex, perPage)
             .compose(filterEvents())        // except the MemberEvent
-            .map { list ->
-                when (list.isEmpty()) {
-                    true -> Either.left(Errors.EmptyResultsError)
-                    false -> Either.right(list)
-                }
-            }
 }
