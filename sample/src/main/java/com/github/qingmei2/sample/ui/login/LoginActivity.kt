@@ -22,11 +22,11 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     private val loginClicksIntentPublisher =
-        PublishSubject.create<LoginIntent.LoginClicksIntent>()
+            PublishSubject.create<LoginIntent.LoginClicksIntent>()
 
     override val layoutId: Int = R.layout.activity_login
 
-    private val viewModel: LoginViewModel by instance()
+    private val mViewModel: LoginViewModel by instance()
 
     override fun onStart() {
         super.onStart()
@@ -35,25 +35,25 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
-        loginClicksIntentPublisher
+            loginClicksIntentPublisher
     )
 
     private fun bind() {
         btnLogin.clicks()
-            .map {
-                LoginIntent.LoginClicksIntent(
-                    username = tvUsername.text.toString(),
-                    password = tvPassword.text.toString()
-                )
-            }
-            .autoDisposable(scopeProvider)
-            .subscribe(loginClicksIntentPublisher)
+                .map {
+                    LoginIntent.LoginClicksIntent(
+                            username = tvUsername.text.toString(),
+                            password = tvPassword.text.toString()
+                    )
+                }
+                .autoDisposable(scopeProvider)
+                .subscribe(loginClicksIntentPublisher)
 
-        viewModel.states()
-            .autoDisposable(scopeProvider)
-            .subscribe(this::render)
+        mViewModel.states()
+                .autoDisposable(scopeProvider)
+                .subscribe(this::render)
 
-        viewModel.processIntents(intents())
+        mViewModel.processIntents(intents())
     }
 
     override fun render(state: LoginViewState) {
@@ -81,7 +81,7 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
 
         state.errors?.apply {
             when (this) {
-                is Errors.SimpleError -> {
+                is Errors.SimpleMessageError -> {
                     toast { simpleMessage }
                 }
                 else -> {

@@ -55,7 +55,7 @@ class LoginActionProcessorHolder(
         }
 
     private fun onLoginParamEmptyResult(): Observable<LoginResult.ClickLoginResult> =
-        Observable.just(Errors.SimpleError("username or password can't be null!"))
+        Observable.just(Errors.SimpleMessageError("username or password can't be null!"))
             .map(LoginResult.ClickLoginResult::Failure)
 
     private fun onLoginFailureResult(error: Errors): Observable<LoginResult.ClickLoginResult> =

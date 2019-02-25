@@ -1,10 +1,11 @@
 package com.github.qingmei2.sample.ui.main.home
 
-import androidx.paging.PagedList
+import arrow.core.left
 import com.github.qingmei2.mvi.ext.paging.IntPageKeyedData
 import com.github.qingmei2.mvi.ext.paging.IntPageKeyedDataSource
 import com.github.qingmei2.mvi.ext.paging.Paging
 import com.github.qingmei2.mvi.ext.reactivex.flatMapErrorActionObservable
+import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.ReceivedEvent
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
 import com.github.qingmei2.sample.manager.UserManager
@@ -16,7 +17,6 @@ class HomeActionProcessorHolder(
         private val repository: HomeRepository,
         private val schedulerProvider: SchedulerProvider
 ) {
-
     private val initialActionTransformer =
             ObservableTransformer<HomeAction.InitialAction, HomeResult.InitialResult> { action ->
                 action.flatMap<HomeResult.InitialResult> {
@@ -31,6 +31,9 @@ class HomeActionProcessorHolder(
                 loadInitial = {
                     repository
                             .queryReceivedEvents(UserManager.INSTANCE.login, pageIndex = 1, perPage = 15)
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .onErrorReturn { Errors.ErrorWrapper(it).left() }
                             .flatMap { either ->
                                 either.fold({
                                     Flowable.empty<IntPageKeyedData<ReceivedEvent>>()
@@ -48,6 +51,9 @@ class HomeActionProcessorHolder(
                 loadAfter = { param ->
                     repository
                             .queryReceivedEvents(UserManager.INSTANCE.login, param.key, perPage = 15)
+                            .subscribeOn(schedulerProvider.io())
+                            .observeOn(schedulerProvider.ui())
+                            .onErrorReturn { Errors.ErrorWrapper(it).left() }
                             .flatMap { either ->
                                 either.fold({
                                     Flowable.empty<IntPageKeyedData<ReceivedEvent>>()
@@ -64,10 +70,7 @@ class HomeActionProcessorHolder(
                 }
         )
 
-    private fun onInitialSuccessResult(events: PagedList<ReceivedEvent>): Observable<HomeResult.InitialResult> =
-            Observable.just(HomeResult.InitialResult.Success(events))
-
-    private val actionProcessor: ObservableTransformer<HomeAction, HomeResult> =
+    val actionProcessor: ObservableTransformer<HomeAction, HomeResult> =
             ObservableTransformer { actions ->
                 actions.publish { shared ->
                     Observable.merge(

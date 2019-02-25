@@ -8,7 +8,7 @@ sealed class Errors : Throwable() {
 
     object EmptyResultsError : Errors()
 
-    data class SimpleError(val simpleMessage: String) : Errors()
+    data class SimpleMessageError(val simpleMessage: String) : Errors()
 
-    object SingleError : Errors()
+    data class ErrorWrapper(val errors: Throwable) : Errors()
 }
