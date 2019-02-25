@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.qingmei2.mvi.base.view.fragment.AutoDisposeFragment
 import com.github.qingmei2.sample.R
+import com.github.qingmei2.sample.base.SimpleViewPagerAdapter
+import com.github.qingmei2.sample.ui.main.home.HomeFragment
 import com.jakewharton.rxbinding3.material.itemSelections
-import com.jakewharton.rxbinding3.viewpager.pageScrollEvents
+import com.jakewharton.rxbinding3.viewpager.pageSelections
 import com.uber.autodispose.autoDisposable
 import kotlinx.android.synthetic.main.fragment_main.*
 
@@ -26,17 +28,27 @@ class MainFragment : AutoDisposeFragment() {
         super.onViewCreated(view, savedInstanceState)
         mViewModel = MainViewModel.instance(this)
 
+        initViewPager()
+
         binds()
+    }
+
+    private fun initViewPager() {
+        val fragments = listOf(HomeFragment(), HomeFragment(), HomeFragment())
+
+        mViewPager.adapter = SimpleViewPagerAdapter(childFragmentManager, fragments)
+        mViewPager.currentItem = 0
+        mViewPager.offscreenPageLimit = 2
     }
 
     private fun binds() {
         mBottomNavigation.itemSelections()
-            .autoDisposable(scopeProvider)
-            .subscribe(::onBottomNavigationSelectChanged)
-        mViewPager.pageScrollEvents()
-            .map { it.position }
-            .autoDisposable(scopeProvider)
-            .subscribe(::onPageSelectChangedPort)
+                .autoDisposable(scopeProvider)
+                .subscribe(::onBottomNavigationSelectChanged)
+        mViewPager.pageSelections()
+                .map { it }
+                .autoDisposable(scopeProvider)
+                .subscribe(::onPageSelectChangedPort)
     }
 
     private fun onPageSelectChangedPort(index: Int) {

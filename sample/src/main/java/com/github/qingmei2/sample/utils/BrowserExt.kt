@@ -1,4 +1,4 @@
-package com.github.qingmei2.sample.ext
+package com.github.qingmei2.sample.utils
 
 import android.content.Context
 import android.content.Intent

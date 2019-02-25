@@ -5,7 +5,7 @@ import com.github.qingmei2.mvi.base.view.fragment.BaseFragment
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.ReceivedEvent
-import com.github.qingmei2.sample.ext.toast
+import com.github.qingmei2.sample.utils.toast
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*

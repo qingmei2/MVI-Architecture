@@ -1,4 +1,4 @@
-package com.github.qingmei2.sample.ext
+package com.github.qingmei2.sample.utils
 
 import android.widget.Toast
 import com.github.qingmei2.sample.base.BaseApplication
