@@ -1,4 +1,4 @@
-package com.github.qingmei2.mvi.ext
+package com.github.qingmei2.sample.ext
 
 import android.content.Context
 import android.content.Intent

@@ -2,7 +2,7 @@ package com.github.qingmei2.sample.ui.login
 
 import android.view.View
 import com.github.qingmei2.mvi.base.view.activity.BaseActivity
-import com.github.qingmei2.mvi.ext.toast
+import com.github.qingmei2.sample.ext.toast
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.ui.main.MainActivity
