@@ -1,11 +1,18 @@
 package com.github.qingmei2.sample.ui.main.home
 
+import android.animation.ObjectAnimator
 import androidx.paging.PagedList
 import com.github.qingmei2.mvi.base.view.fragment.BaseFragment
+import com.github.qingmei2.mvi.ext.reactivex.throttleFirstClicks
 import com.github.qingmei2.sample.R
+import com.github.qingmei2.sample.base.BaseApplication
 import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.ReceivedEvent
+import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
+import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
+import com.github.qingmei2.sample.utils.jumpBrowser
 import com.github.qingmei2.sample.utils.toast
+import com.jakewharton.rxbinding3.recyclerview.scrollStateChanges
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -22,6 +29,7 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
     override val layoutId: Int = R.layout.fragment_home
 
     private val mViewModel: HomeViewModel by instance()
+    private val mSchedulerProvider: SchedulerProvider by instance()
 
     override fun onStart() {
         super.onStart()
@@ -31,8 +39,17 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
 
     private fun binds() {
         mViewModel.states()
-                .autoDisposable(scopeProvider)
-                .subscribe(this::render)
+            .autoDisposable(scopeProvider)
+            .subscribe(this::render)
+        mFabButton.throttleFirstClicks()
+            .map { 0 }
+            .autoDisposable(scopeProvider)
+            .subscribe(mRecyclerView::scrollToPosition)
+        mRecyclerView.scrollStateChanges()
+            .compose(scrollStateProcessor)
+            .observeOn(mSchedulerProvider.ui())
+            .autoDisposable(scopeProvider)
+            .subscribe { switchFabState(it) }
 
         mViewModel.processIntents(intents())
     }
@@ -45,22 +62,17 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
 //        )
     }
 
-    private fun initialIntent(): Observable<HomeIntent> =
-            Observable.just(HomeIntent.InitialIntent)
+    private fun initialIntent(): Observable<HomeIntent> = Observable.just(HomeIntent.InitialIntent)
 
     override fun render(state: HomeViewState) {
         state.error?.apply {
             when (this) {
-                is Errors -> when (this) {
-                    is Errors.SimpleMessageError -> {
-                        toast(simpleMessage)
-                    }
-                    is Errors.ErrorWrapper -> {
-                        toast("error:${errors.localizedMessage}")
-                    }
-                    else -> {
-                        toast("error:$localizedMessage")
-                    }
+                is Errors.SimpleMessageError -> toast(simpleMessage)
+                is Errors.ErrorWrapper -> {
+                    toast("error:${errors.localizedMessage}")
+                }
+                else -> {
+                    toast("error:$localizedMessage")
                 }
             }
         }
@@ -77,8 +89,27 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
     }
 
     private fun initPagedListAdapter(pageList: PagedList<ReceivedEvent>) {
-        val adapter = HomePagedListAdapter()
-        mRecyclerView.adapter = adapter
-        adapter.submitList(pageList)
+        val mAdapter = HomePagedListAdapter()
+        mRecyclerView.adapter = mAdapter
+        mAdapter.submitList(pageList)
+        mAdapter.observeEvent()
+            .doOnNext { event ->
+                when (event) {
+                    is HomePagedListItemEvent.ClickEvent -> {
+                        BaseApplication.INSTANCE.jumpBrowser(event.url)
+                    }
+                }
+            }
+            .autoDisposable(scopeProvider)
+            .subscribe()
     }
+
+    private fun switchFabState(show: Boolean) =
+        when (show) {
+            false -> ObjectAnimator.ofFloat(mFabButton, "translationX", 250f, 0f)
+            true -> ObjectAnimator.ofFloat(mFabButton, "translationX", 0f, 250f)
+        }.apply {
+            duration = 300
+            start()
+        }
 }

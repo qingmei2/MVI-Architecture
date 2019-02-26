@@ -29,21 +29,21 @@ class HomePagedListAdapter : PagedListAdapter<ReceivedEvent, HomePagedListViewHo
     fun observeEvent(): Observable<HomePagedListItemEvent> = eventSubject
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomePagedListViewHolder =
-            HomePagedListViewHolder.create(parent)
+        HomePagedListViewHolder.create(parent)
 
     override fun onBindViewHolder(holder: HomePagedListViewHolder, position: Int) =
-            holder.binds(getItem(position)!!, eventSubject)
+        holder.binds(getItem(position)!!, eventSubject)
 
     companion object {
         private val diffCallback: DiffUtil.ItemCallback<ReceivedEvent> =
-                object : DiffUtil.ItemCallback<ReceivedEvent>() {
+            object : DiffUtil.ItemCallback<ReceivedEvent>() {
 
-                    override fun areItemsTheSame(oldItem: ReceivedEvent, newItem: ReceivedEvent): Boolean =
-                            oldItem == newItem
+                override fun areItemsTheSame(oldItem: ReceivedEvent, newItem: ReceivedEvent): Boolean =
+                    oldItem == newItem
 
-                    override fun areContentsTheSame(oldItem: ReceivedEvent, newItem: ReceivedEvent): Boolean =
-                            oldItem.id == newItem.id
-                }
+                override fun areContentsTheSame(oldItem: ReceivedEvent, newItem: ReceivedEvent): Boolean =
+                    oldItem.id == newItem.id
+            }
     }
 }
 
@@ -55,33 +55,35 @@ class HomePagedListViewHolder(private val rootView: View) : RecyclerView.ViewHol
     private val mIvEventType: ImageView = rootView.findViewById(R.id.ivEventType)
 
     fun binds(
-            data: ReceivedEvent,
-            subject: PublishSubject<HomePagedListItemEvent>
+        data: ReceivedEvent,
+        subject: PublishSubject<HomePagedListItemEvent>
     ) {
         GlideApp.with(mIvAvatar.context)
-                .load(data.actor.avatarUrl)
-                .into(mIvAvatar)
+            .load(data.actor.avatarUrl)
+            .into(mIvAvatar)
 
         renderEvent(mTvEvent, data, subject)
 
         val eventType = data.type
 
-        mIvEventType.setBackgroundResource(when (eventType) {
-            Type.WatchEvent -> R.mipmap.ic_star_yellow_light
-            Type.CreateEvent,
-            Type.ForkEvent,
-            Type.PushEvent -> R.mipmap.ic_fork_green_light
-            else ->
-                throw RuntimeException("$eventType can't be displayed.")
-        })
+        mIvEventType.setBackgroundResource(
+            when (eventType) {
+                Type.WatchEvent -> R.mipmap.ic_star_yellow_light
+                Type.CreateEvent,
+                Type.ForkEvent,
+                Type.PushEvent -> R.mipmap.ic_fork_green_light
+                else ->
+                    throw RuntimeException("$eventType can't be displayed.")
+            }
+        )
 
         mTvEventTime.text = TimeConverter.tramsTimeAgo(data.createdAt)
     }
 
     private fun renderEvent(
-            view: TextView,
-            data: ReceivedEvent,
-            subject: PublishSubject<HomePagedListItemEvent>
+        view: TextView,
+        data: ReceivedEvent,
+        subject: PublishSubject<HomePagedListItemEvent>
     ) {
         val actor = data.actor.displayLogin
         val action = when (data.type) {
@@ -111,23 +113,27 @@ class HomePagedListViewHolder(private val rootView: View) : RecyclerView.ViewHol
             append("$actor $action $repo")
             setSpan(actorSpan, 0, actor.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             setSpan(styleSpan, 0, actor.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(repoSpan,
-                    actor.length + action.length + 2,
-                    actor.length + action.length + repo.length + 2,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(styleSpan2,
-                    actor.length + action.length + 2,
-                    actor.length + action.length + repo.length + 2,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(
+                repoSpan,
+                actor.length + action.length + 2,
+                actor.length + action.length + repo.length + 2,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                styleSpan2,
+                actor.length + action.length + 2,
+                actor.length + action.length + repo.length + 2,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
     }
 
     companion object {
 
         fun create(parent: ViewGroup): HomePagedListViewHolder =
-                LayoutInflater.from(parent.context)
-                        .inflate(R.layout.item_home_received_event, parent, false)
-                        .run(::HomePagedListViewHolder)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_home_received_event, parent, false)
+                .run(::HomePagedListViewHolder)
     }
 }
 
