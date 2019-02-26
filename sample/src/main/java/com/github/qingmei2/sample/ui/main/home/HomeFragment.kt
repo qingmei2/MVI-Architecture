@@ -81,7 +81,7 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
 
         state.uiEvent.apply {
             when (this) {
-                is HomeViewState.HomeUIEvent.InitialSuccess -> {
+                is HomeUIEvent.InitialSuccess -> {
                     initPagedListAdapter(this.pageList)
                 }
             }

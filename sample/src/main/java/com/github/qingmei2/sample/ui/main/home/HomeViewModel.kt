@@ -12,7 +12,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 
 class HomeViewModel(
-        private val actionProcessorHolder: HomeActionProcessorHolder
+    private val actionProcessorHolder: HomeActionProcessorHolder
 ) : BaseViewModel<HomeIntent, HomeViewState>() {
 
     private val intentSubject: PublishSubject<HomeIntent> = PublishSubject.create()
@@ -22,8 +22,8 @@ class HomeViewModel(
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
                 Observable.merge(
-                        shared.ofType(HomeIntent.InitialIntent::class.java).take(1),
-                        shared.notOfType(HomeIntent.InitialIntent::class.java)
+                    shared.ofType(HomeIntent.InitialIntent::class.java).take(1),
+                    shared.notOfType(HomeIntent.InitialIntent::class.java)
                 )
             }
         }
@@ -42,13 +42,13 @@ class HomeViewModel(
 
     private fun compose(): Observable<HomeViewState> {
         return intentSubject
-                .compose(intentFilter)
-                .map(this::actionFromIntent)
-                .compose(actionProcessorHolder.actionProcessor)
-                .scan(HomeViewState.idle(), reducer)
-                .distinctUntilChanged()
-                .replay(1)
-                .autoConnect(0)
+            .compose(intentFilter)
+            .map(this::actionFromIntent)
+            .compose(actionProcessorHolder.actionProcessor)
+            .scan(HomeViewState.idle(), reducer)
+            .distinctUntilChanged()
+            .replay(1)
+            .autoConnect(0)
     }
 
     companion object {
@@ -58,7 +58,7 @@ class HomeViewModel(
                 is HomeResult.InitialResult -> when (result) {
                     is HomeResult.InitialResult.Success ->
                         previousState.copy(
-                                uiEvent = HomeViewState.HomeUIEvent.InitialSuccess(result.pagedList)
+                            uiEvent = HomeUIEvent.InitialSuccess(result.pagedList)
                         )
                 }
             }
@@ -68,12 +68,12 @@ class HomeViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class HomeViewModelFactory private constructor(
-        private val actionProcessorHolder: HomeActionProcessorHolder
+    private val actionProcessorHolder: HomeActionProcessorHolder
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            HomeViewModel(actionProcessorHolder) as T
+        HomeViewModel(actionProcessorHolder) as T
 
     companion object :
-            SingletonHolderSingleArg<HomeViewModelFactory, HomeActionProcessorHolder>(::HomeViewModelFactory)
+        SingletonHolderSingleArg<HomeViewModelFactory, HomeActionProcessorHolder>(::HomeViewModelFactory)
 }

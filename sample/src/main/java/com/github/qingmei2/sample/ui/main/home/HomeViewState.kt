@@ -11,11 +11,6 @@ data class HomeViewState(
     val uiEvent: HomeUIEvent?
 ) : IViewState {
 
-    sealed class HomeUIEvent {
-
-        data class InitialSuccess(val pageList: PagedList<ReceivedEvent>) : HomeUIEvent()
-    }
-
     companion object {
 
         fun idle(): HomeViewState {
@@ -27,4 +22,9 @@ data class HomeViewState(
             )
         }
     }
+}
+
+sealed class HomeUIEvent {
+
+    data class InitialSuccess(val pageList: PagedList<ReceivedEvent>) : HomeUIEvent()
 }
