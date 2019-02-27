@@ -15,7 +15,7 @@
             android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/mToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:background="@color/colorPrimary"
@@ -23,11 +23,12 @@
                 app:titleTextColor="@color/white"/>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/mSwipeRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                    android:id="@+id/mRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -38,7 +39,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabTop"
+            android:id="@+id/mFabButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"

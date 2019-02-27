@@ -2,9 +2,7 @@
 
 #### [English Documentation](https://github.com/qingmei2/MVI-Rhine/blob/master/README.md) | 中文文档
 
-**The MVI architecture using RxJava2 and Android Jetpack.**
-
-## Summary
+## 概述
 
 > This repo is based on an Android ported version of the **Model-View-Intent architecture** and uses RxJava2 to implement the reactive caracteristic of the architecture.
 
@@ -12,9 +10,9 @@
 
 ![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
-## Libraries
+## 三方库
 
-### Android Jetpack
+### Android 官方架构组件 Jetpack
 
 * [Lifecycle: Create a UI that automatically responds to lifecycle events.](https://developer.android.com/topic/libraries/architecture/lifecycle)
 
@@ -26,17 +24,17 @@
 
 * [Paging: Makes it easier for you to load data gradually and gracefully within your app's RecyclerView.](https://developer.android.com/topic/libraries/architecture/paging/)
 
-### Http
+### 网络请求
 
 * [Retrofit2: Type-safe HTTP client for Android and Java by Square, Inc.](https://github.com/square/retrofit)
 
 * [OkHttp: An HTTP+HTTP/2 client for Android and Java applications.](https://github.com/square/okhttp)
 
-### DI
+### 依赖注入
 
 * [Kodein-DI: Painless Kotlin Dependency Injection](https://github.com/Kodein-Framework/Kodein-DI)
 
-### ReactiveX
+### 响应式库
 
 * [RxKotlin: RxJava bindings for Kotlin](https://github.com/ReactiveX/RxKotlin)
 
@@ -48,17 +46,17 @@
 
 * [AutoDispose: Automatic binding+disposal of RxJava 2 streams.](https://github.com/uber/AutoDispose)
 
-### Functional
+### 函数式库
 
 * [Arrow: Functional companion to Kotlin's Standard Library.](https://arrow-kt.io/)
 
-### Others
+### 其它
 
 * [Glide: An image loading and caching library for Android focused on smooth scrolling](https://github.com/bumptech/glide)
 
 * [Timber: A logger with a small, extensible API which provides utility on top of Android's normal Log class.](https://github.com/JakeWharton/timber)
 
-## ScreenShots
+## 屏幕截图
 
 <div align:left;display:inline;>
 <img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
@@ -70,7 +68,7 @@
 <img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
 </div>
 
-## Thanks to
+## 感谢
 
 :art: The UI design of this project refers to [gitme](https://github.com/flutterchina/gitme).
 

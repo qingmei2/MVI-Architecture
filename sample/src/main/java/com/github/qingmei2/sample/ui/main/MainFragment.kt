@@ -10,6 +10,7 @@ import com.github.qingmei2.mvi.base.view.fragment.AutoDisposeFragment
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.base.SimpleViewPagerAdapter
 import com.github.qingmei2.sample.ui.main.home.HomeFragment
+import com.github.qingmei2.sample.ui.main.repos.ReposFragment
 import com.jakewharton.rxbinding3.material.itemSelections
 import com.jakewharton.rxbinding3.viewpager.pageSelections
 import com.uber.autodispose.autoDisposable
@@ -34,7 +35,7 @@ class MainFragment : AutoDisposeFragment() {
     }
 
     private fun initViewPager() {
-        val fragments = listOf(HomeFragment(), HomeFragment(), HomeFragment())
+        val fragments = listOf(HomeFragment(), ReposFragment(), HomeFragment())
 
         mViewPager.adapter = SimpleViewPagerAdapter(childFragmentManager, fragments)
         mViewPager.currentItem = 0
@@ -43,12 +44,12 @@ class MainFragment : AutoDisposeFragment() {
 
     private fun binds() {
         mBottomNavigation.itemSelections()
-                .autoDisposable(scopeProvider)
-                .subscribe(::onBottomNavigationSelectChanged)
+            .autoDisposable(scopeProvider)
+            .subscribe(::onBottomNavigationSelectChanged)
         mViewPager.pageSelections()
-                .map { it }
-                .autoDisposable(scopeProvider)
-                .subscribe(::onPageSelectChangedPort)
+            .map { it }
+            .autoDisposable(scopeProvider)
+            .subscribe(::onPageSelectChangedPort)
     }
 
     private fun onPageSelectChangedPort(index: Int) {

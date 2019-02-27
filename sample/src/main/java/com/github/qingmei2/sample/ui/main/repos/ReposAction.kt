@@ -4,5 +4,5 @@ import com.github.qingmei2.mvi.base.action.IAction
 
 sealed class ReposAction : IAction {
 
-    object InitialAction : ReposAction()
+    data class QueryReposAction(val sortType: String) : ReposAction()
 }

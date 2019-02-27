@@ -34,9 +34,6 @@ class LoginViewModel(
             }
         }
 
-    /**
-     * Compose all components to create the stream logic
-     */
     private fun compose(): Observable<LoginViewState> {
         return intentsSubject
                 .compose(intentFilter)

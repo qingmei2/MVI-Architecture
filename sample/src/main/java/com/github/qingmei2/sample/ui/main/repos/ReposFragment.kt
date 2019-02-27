@@ -18,7 +18,7 @@ import com.jakewharton.rxbinding3.recyclerview.scrollStateChanges
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_repos.*
 import org.kodein.di.Kodein
 import org.kodein.di.generic.instance
 

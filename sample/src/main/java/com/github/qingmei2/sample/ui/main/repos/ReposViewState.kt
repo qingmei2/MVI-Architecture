@@ -7,7 +7,6 @@ import com.github.qingmei2.sample.entity.Repo
 data class ReposViewState(
     val error: Throwable?,
     val isRefreshing: Boolean,
-    val progressVisible: Boolean,
     val uiEvent: ReposUIEvent?
 ) : IViewState {
 
@@ -17,7 +16,6 @@ data class ReposViewState(
             return ReposViewState(
                 error = null,
                 isRefreshing = false,
-                progressVisible = false,
                 uiEvent = null
             )
         }
