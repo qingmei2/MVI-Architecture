@@ -16,6 +16,13 @@ val reposKodeinModule = Kodein.Module("reposKodeinModule") {
             .of(context, ReposViewModelFactory.getInstance(instance()))[ReposViewModel::class.java]
     }
 
+    bind<ReposActionProcessorHolder>() with singleton {
+        ReposActionProcessorHolder(
+            repository = instance(),
+            schedulerProvider = instance()
+        )
+    }
+
     bind<LocalReposDataSource>() with singleton {
         LocalReposDataSource()
     }
@@ -27,17 +34,10 @@ val reposKodeinModule = Kodein.Module("reposKodeinModule") {
         )
     }
 
-    bind<ReposDataSource>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
+    bind<ReposDataSource>() with singleton {
         ReposDataSource(
             remote = instance(),
             local = instance()
-        )
-    }
-
-    bind<ReposActionProcessorHolder>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
-        ReposActionProcessorHolder(
-            repository = instance(),
-            schedulerProvider = instance()
         )
     }
 }

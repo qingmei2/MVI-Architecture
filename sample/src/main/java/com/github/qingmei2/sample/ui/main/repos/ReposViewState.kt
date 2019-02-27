@@ -1,6 +1,8 @@
 package com.github.qingmei2.sample.ui.main.repos
 
+import androidx.paging.PagedList
 import com.github.qingmei2.mvi.base.viewstate.IViewState
+import com.github.qingmei2.sample.entity.Repo
 
 data class ReposViewState(
     val error: Throwable?,
@@ -24,4 +26,5 @@ data class ReposViewState(
 
 sealed class ReposUIEvent {
 
+    data class InitialSuccess(val pageList: PagedList<Repo>) : ReposUIEvent()
 }

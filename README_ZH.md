@@ -1,6 +1,6 @@
 # MVI-Rhine
 
-#### English Documentation | [中文文档](https://github.com/qingmei2/MVI-Rhine/blob/master/README_ZH.md)
+#### [English Documentation](https://github.com/qingmei2/MVI-Rhine/blob/master/README.md) | 中文文档
 
 **The MVI architecture using RxJava2 and Android Jetpack.**
 
