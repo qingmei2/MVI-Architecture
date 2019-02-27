@@ -74,7 +74,7 @@
 
 :art: The UI design of this project refers to [gitme](https://github.com/flutterchina/gitme).
 
-:star: Thanks for [oldergod/android-architecture](https://github.com/oldergod/android-architecture)'s guidance during development.
+:star: This repo is inspired by [oldergod/android-architecture](https://github.com/oldergod/android-architecture) and uses some of its source code.
 
 ## License
 

@@ -1,10 +1,10 @@
 # MVI-Rhine
 
-#### [English Documentation](https://github.com/qingmei2/MVI-Rhine/blob/master/README.md) | 中文文档
+#### [English Documentation](https://github.com/qingmei2/MVI-Rhine) | 中文文档
 
 ## 概述
 
-这个Android项目是基于 **MVI** (Model-View-Intent) 模式进行开发的，项目整体 **业务逻辑** 和 **UI的交互逻辑** 全部交由 **RxJava2** 进行串联。
+这个 **Github客户端** 的Android项目是基于 **MVI** (Model-View-Intent) 模式进行开发的，项目整体 **业务逻辑** 和 **UI的交互逻辑** 全部交由 **RxJava2** 进行串联。
 
 **MVI** 架构旨在使用  **响应式** 和 **函数式编程** （Reactive && Functional Programming）， 这个架构的两个主要组件，`View`和`ViewModel`可以看作是函数，两者间通过`RxJava`相互输入和输出：
 
