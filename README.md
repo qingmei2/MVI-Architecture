@@ -1,10 +1,14 @@
-# MVI-Rhine:
+# MVI-Rhine
 
-### English Documentation | [中文文档](https://github.com/qingmei2/MVI-Rhine/blob/master/README_ZH.md)
+#### English Documentation | [中文文档](https://github.com/qingmei2/MVI-Rhine/blob/master/README_ZH.md)
 
 ## Summary
 
 **The MVI architecture using RxJava2 and Android Jetpack.**
+
+> This repo is based on an Android ported version of the **Model-View-Intent architecture** and uses RxJava2 to implement the reactive caracteristic of the architecture.
+
+> The **MVI** architecture embraces reactive and functional programming. The two main components of this architecture, the View and the ViewModel can be seen as functions, taking an input and emiting outputs to each other. The View takes input from the ViewModel and emit back intents. The ViewModel takes input from the View and emit back view states. This means the View has only one entry point to forward data to the ViewModel and vice-versa, the ViewModel only has one way to pass information to the View.
 
 ![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
