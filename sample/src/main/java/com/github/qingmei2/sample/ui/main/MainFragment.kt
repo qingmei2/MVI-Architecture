@@ -10,6 +10,7 @@ import com.github.qingmei2.mvi.base.view.fragment.AutoDisposeFragment
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.base.SimpleViewPagerAdapter
 import com.github.qingmei2.sample.ui.main.home.HomeFragment
+import com.github.qingmei2.sample.ui.main.profile.ProfileFragment
 import com.github.qingmei2.sample.ui.main.repos.ReposFragment
 import com.jakewharton.rxbinding3.material.itemSelections
 import com.jakewharton.rxbinding3.viewpager.pageSelections
@@ -35,7 +36,7 @@ class MainFragment : AutoDisposeFragment() {
     }
 
     private fun initViewPager() {
-        val fragments = listOf(HomeFragment(), ReposFragment(), HomeFragment())
+        val fragments = listOf(HomeFragment(), ReposFragment(), ProfileFragment())
 
         mViewPager.adapter = SimpleViewPagerAdapter(childFragmentManager, fragments)
         mViewPager.currentItem = 0

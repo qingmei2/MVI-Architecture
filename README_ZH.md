@@ -4,13 +4,13 @@
 
 ## 概述
 
-> This repo is based on an Android ported version of the **Model-View-Intent architecture** and uses RxJava2 to implement the reactive caracteristic of the architecture.
+这个Android项目是基于 **MVI** (Model-View-Intent) 模式进行开发的，项目整体 **业务逻辑** 和 **UI的交互逻辑** 全部交由 **RxJava2** 进行串联。
 
-> The **MVI** architecture embraces reactive and functional programming. The two main components of this architecture, the View and the ViewModel can be seen as functions, taking an input and emiting outputs to each other. The View takes input from the ViewModel and emit back intents. The ViewModel takes input from the View and emit back view states. This means the View has only one entry point to forward data to the ViewModel and vice-versa, the ViewModel only has one way to pass information to the View.
+**MVI** 架构旨在使用  **响应式** 和 **函数式编程** （Reactive && Functional Programming）， 这个架构的两个主要组件，`View`和`ViewModel`可以看作是函数，两者间通过`RxJava`相互输入和输出：
 
 ![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
-## 三方库
+## 三方组件
 
 ### Android 官方架构组件 Jetpack
 
@@ -70,9 +70,9 @@
 
 ## 感谢
 
-:art: The UI design of this project refers to [gitme](https://github.com/flutterchina/gitme).
+:art: 项目中的UI设计部分参考了 [gitme](https://github.com/flutterchina/gitme) .
 
-:star: Thanks for [oldergod/android-architecture](https://github.com/oldergod/android-architecture)'s guidance during development.
+:star: 感谢 [oldergod/android-architecture](https://github.com/oldergod/android-architecture) 项目对本项目的指导性作用.
 
 ## License
 

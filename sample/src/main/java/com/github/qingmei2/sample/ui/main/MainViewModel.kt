@@ -11,8 +11,7 @@ class MainViewModel : AutoDisposeViewModel() {
     companion object {
         fun instance(fragment: Fragment): MainViewModel =
             ViewModelProviders
-                .of(fragment, MainViewModelFactory)
-                .get(MainViewModel::class.java)
+                .of(fragment, MainViewModelFactory)[MainViewModel::class.java]
     }
 }
 
