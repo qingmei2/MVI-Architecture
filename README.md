@@ -10,7 +10,18 @@
 
 > The **MVI** architecture embraces reactive and functional programming. The two main components of this architecture, the View and the ViewModel can be seen as functions, taking an input and emiting outputs to each other. The View takes input from the ViewModel and emit back intents. The ViewModel takes input from the View and emit back view states. This means the View has only one entry point to forward data to the ViewModel and vice-versa, the ViewModel only has one way to pass information to the View.
 
-![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
+<div align:left;display:inline;>
+<img width="508" height="308" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png"/>
+</div>
+
+## ScreenShots
+
+<div align:left;display:inline;>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/home.png"/>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/repos.png"/>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
+</div>
 
 ## Libraries
 
@@ -57,18 +68,6 @@
 * [Glide: An image loading and caching library for Android focused on smooth scrolling](https://github.com/bumptech/glide)
 
 * [Timber: A logger with a small, extensible API which provides utility on top of Android's normal Log class.](https://github.com/JakeWharton/timber)
-
-## ScreenShots
-
-<div align:left;display:inline;>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/home.png"/>
-</div>
-
-<div align:left;display:inline;>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/repos.png"/>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
-</div>
 
 ## Thanks to
 

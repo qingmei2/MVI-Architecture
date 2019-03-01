@@ -8,7 +8,19 @@
 
 **MVI** 架构旨在使用  **响应式** 和 **函数式编程** （Reactive && Functional Programming）， 这个架构的两个主要组件，`View`和`ViewModel`可以看作是函数，两者间通过`RxJava`相互输入和输出：
 
-![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
+<div align:left;display:inline;>
+<img width="508" height="308" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png"/>
+</div>
+
+## 屏幕截图
+
+<div align:left;display:inline;>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/home.png"/>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/repos.png"/>
+<img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
+</div>
+
 
 ## 三方组件
 
@@ -55,18 +67,6 @@
 * [Glide: An image loading and caching library for Android focused on smooth scrolling](https://github.com/bumptech/glide)
 
 * [Timber: A logger with a small, extensible API which provides utility on top of Android's normal Log class.](https://github.com/JakeWharton/timber)
-
-## 屏幕截图
-
-<div align:left;display:inline;>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/home.png"/>
-</div>
-
-<div align:left;display:inline;>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/repos.png"/>
-<img width="300" height="540" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
-</div>
 
 ## 感谢
 
