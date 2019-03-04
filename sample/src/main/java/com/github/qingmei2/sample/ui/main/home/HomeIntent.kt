@@ -6,6 +6,8 @@ sealed class HomeIntent : IIntent {
 
     object InitialIntent : HomeIntent()
 
+    object RefreshIntent : HomeIntent()
+
     object ScrollToTopIntent : HomeIntent()
 
     data class ScrollStateChangedIntent(val state: Int) : HomeIntent()

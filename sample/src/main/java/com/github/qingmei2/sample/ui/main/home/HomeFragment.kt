@@ -12,6 +12,7 @@ import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
 import com.github.qingmei2.sample.utils.jumpBrowser
 import com.github.qingmei2.sample.utils.toast
 import com.jakewharton.rxbinding3.recyclerview.scrollStateChanges
+import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -24,6 +25,8 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
     private val mScrollToTopSubject: PublishSubject<HomeIntent.ScrollToTopIntent> =
         PublishSubject.create()
     private val mScrollStateChangedSubject: PublishSubject<HomeIntent.ScrollStateChangedIntent> =
+        PublishSubject.create()
+    private val mRefreshSubject: PublishSubject<HomeIntent.RefreshIntent> =
         PublishSubject.create()
 
     override val kodein: Kodein = Kodein.lazy {
@@ -57,6 +60,10 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
             .map(HomeIntent::ScrollStateChangedIntent)
             .autoDisposable(scopeProvider)
             .subscribe(mScrollStateChangedSubject)
+        mSwipeRefreshLayout.refreshes()
+            .map { HomeIntent.RefreshIntent }
+            .autoDisposable(scopeProvider)
+            .subscribe(mRefreshSubject)
 
         mViewModel.processIntents(intents())
     }
@@ -65,7 +72,8 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
         return Observable.merge(
             initialIntent(),
             mScrollToTopSubject,
-            mScrollStateChangedSubject
+            mScrollStateChangedSubject,
+            mRefreshSubject
         )
     }
 

@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.github.qingmei2.mvi.base.viewmodel.BaseViewModel
 import com.github.qingmei2.mvi.ext.reactivex.notOfType
 import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
-import com.github.qingmei2.sample.ui.main.repos.ReposUIEvent
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class HomeViewModel(
@@ -32,6 +32,7 @@ class HomeViewModel(
     private fun actionFromIntent(intent: HomeIntent): HomeAction {
         return when (intent) {
             is HomeIntent.InitialIntent -> HomeAction.InitialAction
+            is HomeIntent.RefreshIntent -> HomeAction.InitialAction
             HomeIntent.ScrollToTopIntent -> HomeAction.ScrollToTopAction
             is HomeIntent.ScrollStateChangedIntent -> HomeAction.ScrollStateChangedAction(intent.state)
         }

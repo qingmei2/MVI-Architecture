@@ -15,6 +15,7 @@ import com.github.qingmei2.sample.utils.jumpBrowser
 import com.github.qingmei2.sample.utils.toast
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import com.jakewharton.rxbinding3.recyclerview.scrollStateChanges
+import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -25,6 +26,8 @@ import java.util.concurrent.TimeUnit
 
 class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
 
+    private val mRefreshSubject: PublishSubject<ReposIntent.RefreshIntent> =
+        PublishSubject.create()
     private val mSortTypePublishSubject: PublishSubject<ReposIntent.SortTypeChangeIntent> =
         PublishSubject.create()
     private val mScrollToTopSubject: PublishSubject<ReposIntent.ScrollToTopIntent> =
@@ -64,6 +67,10 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
             .map(ReposIntent::ScrollStateChangedIntent)
             .autoDisposable(scopeProvider)
             .subscribe(mScrollStateChangedSubject)
+        mSwipeRefreshLayout.refreshes()
+            .map { ReposIntent.RefreshIntent }
+            .autoDisposable(scopeProvider)
+            .subscribe(mRefreshSubject)
         mToolbar.itemClicks()
             .throttleFirst(500, TimeUnit.MILLISECONDS)
             .map {
@@ -82,11 +89,12 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
     }
 
     override fun intents(): Observable<ReposIntent> {
-        return Observable.merge(
+        return Observable.mergeArray(
             initialIntent(),
             mSortTypePublishSubject.distinctUntilChanged(),
             mScrollToTopSubject,
-            mScrollStateChangedSubject
+            mScrollStateChangedSubject,
+            mRefreshSubject
         )
     }
 
