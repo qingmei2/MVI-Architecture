@@ -6,7 +6,9 @@ sealed class ReposIntent : IIntent {
 
     object InitialIntent : ReposIntent()
 
-    data class SortTypeChangeIntent(
-        val sort: String
-    ) : ReposIntent()
+    object ScrollToTopIntent : ReposIntent()
+
+    data class SortTypeChangeIntent(val sort: String) : ReposIntent()
+
+    data class ScrollStateChangedIntent(val type: Int) : ReposIntent()
 }

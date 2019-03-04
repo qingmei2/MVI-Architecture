@@ -27,4 +27,6 @@ data class HomeViewState(
 sealed class HomeUIEvent {
 
     data class InitialSuccess(val pageList: PagedList<ReceivedEvent>) : HomeUIEvent()
+    data class FloatActionButtonEvent(val visible: Boolean) : HomeUIEvent()
+    object ScrollToTopEvent : HomeUIEvent()
 }

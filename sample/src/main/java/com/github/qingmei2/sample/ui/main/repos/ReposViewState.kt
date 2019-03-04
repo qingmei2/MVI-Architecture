@@ -25,4 +25,6 @@ data class ReposViewState(
 sealed class ReposUIEvent {
 
     data class InitialSuccess(val pageList: PagedList<Repo>) : ReposUIEvent()
+    data class FloatActionButtonEvent(val visible: Boolean) : ReposUIEvent()
+    object ScrollToTopEvent : ReposUIEvent()
 }

@@ -10,9 +10,7 @@
 
 > The **MVI** architecture embraces reactive and functional programming. The two main components of this architecture, the View and the ViewModel can be seen as functions, taking an input and emiting outputs to each other. The View takes input from the ViewModel and emit back intents. The ViewModel takes input from the View and emit back view states. This means the View has only one entry point to forward data to the ViewModel and vice-versa, the ViewModel only has one way to pass information to the View.
 
-<div align:left;display:inline;>
-<img width="508" height="308" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png"/>
-</div>
+![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
 ## ScreenShots
 

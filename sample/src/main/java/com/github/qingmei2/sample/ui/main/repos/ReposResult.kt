@@ -10,4 +10,8 @@ sealed class ReposResult {
         data class Failure(val error: Throwable) : QueryReposResult()
         object InFlight : QueryReposResult()
     }
+
+    object ScrollToTopResult : ReposResult()
+
+    data class FloatActionButtonVisibleResult(val visible: Boolean) : ReposResult()
 }

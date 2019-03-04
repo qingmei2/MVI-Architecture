@@ -9,6 +9,7 @@ import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.Repo
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
 import com.github.qingmei2.sample.manager.UserManager
+import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -24,6 +25,14 @@ class ReposActionProcessorHolder(
                     .map(ReposResult.QueryReposResult::Success)
                     .toObservable()
             }
+        }
+
+    private val scrollStateChangeTransformer =
+        ObservableTransformer<ReposAction.ScrollStateChangedAction, ReposResult> { action ->
+            action
+                .map { it.state }
+                .compose(scrollStateProcessor)
+                .map(ReposResult::FloatActionButtonVisibleResult)
         }
 
     private fun receivedEventDataSource(sortType: String): IntPageKeyedDataSource<Repo> = IntPageKeyedDataSource(
@@ -74,8 +83,12 @@ class ReposActionProcessorHolder(
             actions.publish { shared ->
                 Observable.merge(
                     shared.ofType(ReposAction.QueryReposAction::class.java).compose(initialActionTransformer),
+                    shared.ofType(ReposAction.ScrollToTopAction::class.java).map { ReposResult.ScrollToTopResult },
+                    shared.ofType(ReposAction.ScrollStateChangedAction::class.java).compose(scrollStateChangeTransformer),
                     shared.filter { o ->
                         o !is ReposAction.QueryReposAction
+                                && o !is ReposAction.ScrollToTopAction
+                                && o !is ReposAction.ScrollStateChangedAction
                     }.flatMapErrorActionObservable()
                 )
             }

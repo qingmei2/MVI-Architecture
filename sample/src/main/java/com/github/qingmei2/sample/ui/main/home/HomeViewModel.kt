@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.github.qingmei2.mvi.base.viewmodel.BaseViewModel
 import com.github.qingmei2.mvi.ext.reactivex.notOfType
 import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
+import com.github.qingmei2.sample.ui.main.repos.ReposUIEvent
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -31,6 +32,8 @@ class HomeViewModel(
     private fun actionFromIntent(intent: HomeIntent): HomeAction {
         return when (intent) {
             is HomeIntent.InitialIntent -> HomeAction.InitialAction
+            HomeIntent.ScrollToTopIntent -> HomeAction.ScrollToTopAction
+            is HomeIntent.ScrollStateChangedIntent -> HomeAction.ScrollStateChangedAction(intent.state)
         }
     }
 
@@ -58,9 +61,35 @@ class HomeViewModel(
                 is HomeResult.InitialResult -> when (result) {
                     is HomeResult.InitialResult.Success ->
                         previousState.copy(
+                            error = null,
+                            isRefreshing = false,
                             uiEvent = HomeUIEvent.InitialSuccess(result.pagedList)
                         )
+                    is HomeResult.InitialResult.Failure ->
+                        previousState.copy(
+                            error = result.error,
+                            isRefreshing = false,
+                            uiEvent = null
+                        )
+                    is HomeResult.InitialResult.InFlight ->
+                        previousState.copy(
+                            error = null,
+                            isRefreshing = true,
+                            uiEvent = null
+                        )
                 }
+                is HomeResult.FloatActionButtonVisibleResult ->
+                    previousState.copy(
+                        error = null,
+                        isRefreshing = false,
+                        uiEvent = HomeUIEvent.FloatActionButtonEvent(result.visible)
+                    )
+                HomeResult.ScrollToTopResult ->
+                    previousState.copy(
+                        error = null,
+                        isRefreshing = false,
+                        uiEvent = HomeUIEvent.ScrollToTopEvent
+                    )
             }
         }
     }

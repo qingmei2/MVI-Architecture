@@ -52,6 +52,8 @@ class ReposViewModel(
         return when (intent) {
             is ReposIntent.InitialIntent -> ReposAction.QueryReposAction(sortByUpdate)
             is ReposIntent.SortTypeChangeIntent -> ReposAction.QueryReposAction(intent.sort)
+            ReposIntent.ScrollToTopIntent -> ReposAction.ScrollToTopAction
+            is ReposIntent.ScrollStateChangedIntent -> ReposAction.ScrollStateChangedAction(intent.type)
         }
     }
 
@@ -85,6 +87,18 @@ class ReposViewModel(
                             uiEvent = null
                         )
                 }
+                is ReposResult.FloatActionButtonVisibleResult ->
+                    previousState.copy(
+                        error = null,
+                        isRefreshing = false,
+                        uiEvent = ReposUIEvent.FloatActionButtonEvent(result.visible)
+                    )
+                ReposResult.ScrollToTopResult ->
+                    previousState.copy(
+                        error = null,
+                        isRefreshing = false,
+                        uiEvent = ReposUIEvent.ScrollToTopEvent
+                    )
             }
         }
     }

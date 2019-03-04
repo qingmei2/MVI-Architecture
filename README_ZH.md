@@ -8,9 +8,7 @@
 
 **MVI** 架构旨在使用  **响应式** 和 **函数式编程** （Reactive && Functional Programming）， 这个架构的两个主要组件，`View`和`ViewModel`可以看作是函数，两者间通过`RxJava`相互输入和输出：
 
-<div align:left;display:inline;>
-<img width="508" height="308" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png"/>
-</div>
+![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
 ## 屏幕截图
 
