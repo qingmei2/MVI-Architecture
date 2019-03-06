@@ -92,36 +92,28 @@ class ReposViewModel(
 
         private val reducer = BiFunction { previousState: ReposViewState, result: ReposResult ->
             when (result) {
-                is ReposResult.QueryReposResult -> when (result) {
-                    is ReposResult.QueryReposResult.Success ->
-                        previousState.copy(
-                            error = null,
-                            isRefreshing = false,
-                            uiEvent = ReposUIEvent.InitialSuccess(result.pagedList)
-                        )
-                    is ReposResult.QueryReposResult.Failure ->
-                        previousState.copy(
-                            error = result.error,
-                            isRefreshing = false,
-                            uiEvent = null
-                        )
-                    is ReposResult.QueryReposResult.InFlight ->
-                        previousState.copy(
-                            error = null,
-                            isRefreshing = true,
-                            uiEvent = null
-                        )
+                is ReposResult.QueryReposResult -> {
+                    previousState.copy(
+                        error = null,
+                        uiEvent = ReposUIEvent.InitialSuccess(result.pagedList)
+                    )
+                }
+                is ReposResult.ReposPageResult -> when (result) {
+                    is ReposResult.ReposPageResult.Success ->
+                        previousState.copy(isRefreshing = false, error = null)
+                    is ReposResult.ReposPageResult.Failure ->
+                        previousState.copy(isRefreshing = false, error = result.error)
+                    is ReposResult.ReposPageResult.InFlight ->
+                        previousState.copy(isRefreshing = result.isFirstlyLoad, error = null)
                 }
                 is ReposResult.FloatActionButtonVisibleResult ->
                     previousState.copy(
                         error = null,
-                        isRefreshing = false,
                         uiEvent = ReposUIEvent.FloatActionButtonEvent(result.visible)
                     )
                 ReposResult.ScrollToTopResult ->
                     previousState.copy(
                         error = null,
-                        isRefreshing = false,
                         uiEvent = ReposUIEvent.ScrollToTopEvent
                     )
             }

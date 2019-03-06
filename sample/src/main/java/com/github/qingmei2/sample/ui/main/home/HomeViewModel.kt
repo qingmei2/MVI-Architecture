@@ -9,7 +9,6 @@ import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.functions.BiFunction
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class HomeViewModel(
@@ -59,36 +58,31 @@ class HomeViewModel(
 
         private val reducer = BiFunction { previousState: HomeViewState, result: HomeResult ->
             when (result) {
-                is HomeResult.InitialResult -> when (result) {
-                    is HomeResult.InitialResult.Success ->
-                        previousState.copy(
-                            error = null,
-                            isRefreshing = false,
-                            uiEvent = HomeUIEvent.InitialSuccess(result.pagedList)
-                        )
-                    is HomeResult.InitialResult.Failure ->
-                        previousState.copy(
-                            error = result.error,
-                            isRefreshing = false,
-                            uiEvent = null
-                        )
-                    is HomeResult.InitialResult.InFlight ->
-                        previousState.copy(
-                            error = null,
-                            isRefreshing = true,
-                            uiEvent = null
-                        )
+                is HomeResult.InitialResult -> {
+                    previousState.copy(
+                        error = null,
+                        uiEvent = HomeUIEvent.InitialSuccess(result.pagedList)
+                    )
                 }
                 is HomeResult.FloatActionButtonVisibleResult ->
                     previousState.copy(
                         error = null,
-                        isRefreshing = false,
                         uiEvent = HomeUIEvent.FloatActionButtonEvent(result.visible)
                     )
+                is HomeResult.LoadingPageResult -> when (result) {
+                    is HomeResult.LoadingPageResult.InFlight -> {
+                        previousState.copy(isRefreshing = result.isFirstlyLoad, error = null)
+                    }
+                    is HomeResult.LoadingPageResult.Success -> {
+                        previousState.copy(isRefreshing = false, error = null)
+                    }
+                    is HomeResult.LoadingPageResult.Failure -> {
+                        previousState.copy(isRefreshing = false, error = result.error)
+                    }
+                }
                 HomeResult.ScrollToTopResult ->
                     previousState.copy(
                         error = null,
-                        isRefreshing = false,
                         uiEvent = HomeUIEvent.ScrollToTopEvent
                     )
             }

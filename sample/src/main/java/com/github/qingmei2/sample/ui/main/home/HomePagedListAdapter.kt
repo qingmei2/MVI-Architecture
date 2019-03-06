@@ -47,7 +47,7 @@ class HomePagedListAdapter : PagedListAdapter<ReceivedEvent, HomePagedListViewHo
     }
 }
 
-class HomePagedListViewHolder(private val rootView: View) : RecyclerView.ViewHolder(rootView) {
+class HomePagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
 
     private val mIvAvatar: ImageView = rootView.findViewById(R.id.ivAvatar)
     private val mTvEvent: TextView = rootView.findViewById(R.id.tvEventContent)

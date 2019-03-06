@@ -40,6 +40,8 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
 
     private val mSchedulerProvider: SchedulerProvider by instance()
 
+    private val mAdapter: HomePagedListAdapter = HomePagedListAdapter()
+
     override fun onStart() {
         super.onStart()
 
@@ -110,19 +112,25 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
     }
 
     private fun initPagedListAdapter(pageList: PagedList<ReceivedEvent>) {
-        val mAdapter = HomePagedListAdapter()
-        mRecyclerView.adapter = mAdapter
-        mAdapter.submitList(pageList)
-        mAdapter.observeEvent()
-            .doOnNext { event ->
-                when (event) {
-                    is HomePagedListItemEvent.ClickEvent -> {
-                        BaseApplication.INSTANCE.jumpBrowser(event.url)
+        when (mRecyclerView.adapter == null) {
+            true -> {
+                mRecyclerView.adapter = mAdapter
+                mAdapter.submitList(pageList)
+                mAdapter.observeEvent()
+                    .doOnNext { event ->
+                        when (event) {
+                            is HomePagedListItemEvent.ClickEvent -> {
+                                BaseApplication.INSTANCE.jumpBrowser(event.url)
+                            }
+                        }
                     }
-                }
+                    .autoDisposable(scopeProvider)
+                    .subscribe()
             }
-            .autoDisposable(scopeProvider)
-            .subscribe()
+            false -> {
+                mAdapter.submitList(pageList)
+            }
+        }
     }
 
     private fun switchFabState(show: Boolean) =

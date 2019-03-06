@@ -13,16 +13,20 @@ import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
+import io.reactivex.subjects.PublishSubject
 
 class ReposActionProcessorHolder(
     private val repository: ReposDataSource,
     private val schedulerProvider: SchedulerProvider
 ) {
+    private val reposLoadingEventSubject: PublishSubject<ReposResult> =
+        PublishSubject.create()
+
     private val initialActionTransformer =
         ObservableTransformer<ReposAction.QueryReposAction, ReposResult> { action ->
             action.flatMap<ReposResult> {
                 Paging.buildPageKeyedDataSource(receivedEventDataSource(it.sortType))
-                    .map(ReposResult.QueryReposResult::Success)
+                    .map(ReposResult::QueryReposResult)
                     .toObservable()
             }
         }
@@ -42,10 +46,21 @@ class ReposActionProcessorHolder(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .onErrorReturn { Errors.ErrorWrapper(it).left() }
+                .doOnSubscribe {
+                    reposLoadingEventSubject.onNext(
+                        ReposResult.ReposPageResult.InFlight(true)
+                    )
+                }
                 .flatMap { either ->
                     either.fold({
+                        reposLoadingEventSubject.onNext(
+                            ReposResult.ReposPageResult.Failure(true, it)
+                        )
                         Flowable.empty<IntPageKeyedData<Repo>>()
                     }, { datas ->
+                        reposLoadingEventSubject.onNext(
+                            ReposResult.ReposPageResult.Success(true)
+                        )
                         Flowable.just(
                             IntPageKeyedData.build(
                                 data = datas,
@@ -62,10 +77,21 @@ class ReposActionProcessorHolder(
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .onErrorReturn { Errors.ErrorWrapper(it).left() }
+                .doOnSubscribe {
+                    reposLoadingEventSubject.onNext(
+                        ReposResult.ReposPageResult.InFlight(false)
+                    )
+                }
                 .flatMap { either ->
                     either.fold({
+                        reposLoadingEventSubject.onNext(
+                            ReposResult.ReposPageResult.Failure(false, it)
+                        )
                         Flowable.empty<IntPageKeyedData<Repo>>()
                     }, { datas ->
+                        reposLoadingEventSubject.onNext(
+                            ReposResult.ReposPageResult.Success(false)
+                        )
                         Flowable.just(
                             IntPageKeyedData.build(
                                 data = datas,
@@ -81,10 +107,11 @@ class ReposActionProcessorHolder(
     val actionProcessor: ObservableTransformer<ReposAction, ReposResult> =
         ObservableTransformer { actions ->
             actions.publish { shared ->
-                Observable.merge(
+                Observable.mergeArray(
                     shared.ofType(ReposAction.QueryReposAction::class.java).compose(initialActionTransformer),
                     shared.ofType(ReposAction.ScrollToTopAction::class.java).map { ReposResult.ScrollToTopResult },
                     shared.ofType(ReposAction.ScrollStateChangedAction::class.java).compose(scrollStateChangeTransformer),
+                    reposLoadingEventSubject,
                     shared.filter { o ->
                         o !is ReposAction.QueryReposAction
                                 && o !is ReposAction.ScrollToTopAction

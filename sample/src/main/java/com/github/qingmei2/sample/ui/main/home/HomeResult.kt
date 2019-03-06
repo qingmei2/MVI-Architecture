@@ -5,10 +5,15 @@ import com.github.qingmei2.sample.entity.ReceivedEvent
 
 sealed class HomeResult {
 
-    sealed class InitialResult : HomeResult() {
-        data class Success(val pagedList: PagedList<ReceivedEvent>) : InitialResult()
-        data class Failure(val error: Throwable) : InitialResult()
-        object InFlight : InitialResult()
+    data class InitialResult(val pagedList: PagedList<ReceivedEvent>) : HomeResult()
+
+    sealed class LoadingPageResult : HomeResult() {
+        data class InFlight(val isFirstlyLoad: Boolean) : LoadingPageResult()
+        data class Success(val isFirstlyLoad: Boolean) : LoadingPageResult()
+        data class Failure(
+            val isFirstlyLoad: Boolean,
+            val error: Throwable
+        ) : LoadingPageResult()
     }
 
     object ScrollToTopResult : HomeResult()
