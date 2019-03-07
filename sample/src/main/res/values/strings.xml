@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyGithub-MVI</string>
+    <string name="app_name">GitHub</string>
 
     <string name="main_nav_home">Home</string>
     <string name="main_nav_repos">Repos</string>
