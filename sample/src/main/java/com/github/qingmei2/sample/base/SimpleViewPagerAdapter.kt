@@ -5,8 +5,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
 class SimpleViewPagerAdapter(
-        fragmentManager: FragmentManager,
-        private val fragments: List<Fragment>
+    fragmentManager: FragmentManager,
+    private val fragments: List<Fragment>
 ) : FragmentPagerAdapter(fragmentManager) {
 
     override fun getItem(index: Int): Fragment = fragments[index]

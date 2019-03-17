@@ -4,11 +4,11 @@ buildscript {
     repositories {
         google()
         jcenter()
-
     }
     dependencies {
         classpath build_plugins.android_gradle
         classpath build_plugins.kotlin_gradle
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.0.0"
     }
 }
 

@@ -14,10 +14,10 @@ ext {
             kotlin_coroutines    : '1.0.0',
 
             support              : '1.0.0',
-            arch_comp_lifecycle  : '2.0.0-rc01',
-            arch_comp_persistence: '2.0.0-rc01',
-            arch_comp_navigation : '1.0.0-alpha07',
-            arch_comp_paging     : '2.0.0-rc01',
+            arch_comp_lifecycle  : '2.0.0',
+            arch_comp_persistence: '2.1.0-alpha04',
+            arch_comp_navigation : '2.0.0',
+            arch_comp_paging     : '2.1.0',
 
             retrofit             : '2.4.0',
             okhttp               : '3.11.0',
@@ -62,8 +62,8 @@ ext {
             arch_comp_livedata          : [group: 'androidx.lifecycle', name: 'lifecycle-livedata', version: versions.arch_comp_lifecycle],
             arch_comp_livedata_rx       : [group: 'androidx.lifecycle', name: 'lifecycle-reactivestreams', version: versions.arch_comp_lifecycle],
 
-            arch_comp_navigation        : [group: 'android.arch.navigation', name: 'navigation-fragment-ktx', version: versions.arch_comp_navigation],
-            arch_comp_navigation_ui     : [group: 'android.arch.navigation', name: 'navigation-ui-ktx', version: versions.arch_comp_navigation],
+            arch_comp_navigation        : [group: 'androidx.navigation', name: 'navigation-fragment', version: versions.arch_comp_navigation],
+            arch_comp_navigation_ui     : [group: 'androidx.navigation', name: 'navigation-ui', version: versions.arch_comp_navigation],
 
             arch_comp_paging            : [group: 'androidx.paging', name: 'paging-runtime', version: versions.arch_comp_paging],
             arch_comp_paging_rxjava     : [group: 'androidx.paging', name: 'paging-rxjava2', version: versions.arch_comp_paging],
