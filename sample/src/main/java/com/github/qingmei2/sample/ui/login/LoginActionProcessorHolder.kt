@@ -17,41 +17,42 @@ class LoginActionProcessorHolder(
 
     private val initialUiActionTransformer =
         ObservableTransformer<LoginAction.InitialUiAction, LoginResult.AutoLoginInfoResult> { actions ->
-            Observable
-                .zip(repository.prefsUser().toObservable(),
-                    repository.prefsAutoLogin().toObservable(),
-                    BiFunction { either: Either<Errors, LoginEntity>, autoLogin: Boolean ->
-                        either.fold({
-                            LoginResult.AutoLoginInfoResult.NoUserData
-                        }, { autoLoginInfo ->
-                            LoginResult.AutoLoginInfoResult.Success(autoLoginInfo, autoLogin)
+            actions.flatMap {
+                Observable
+                    .zip(repository.prefsUser().toObservable(),
+                        repository.prefsAutoLogin().toObservable(),
+                        BiFunction { either: Either<Errors, LoginEntity>, autoLogin: Boolean ->
+                            either.fold({
+                                LoginResult.AutoLoginInfoResult.NoUserData
+                            }, { autoLoginInfo ->
+                                LoginResult.AutoLoginInfoResult.Success(autoLoginInfo, autoLogin)
+                            })
                         })
-                    })
-                .onErrorReturn(LoginResult.AutoLoginInfoResult::Failure)
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .startWith(LoginResult.AutoLoginInfoResult.InFlight)
+                    .onErrorReturn(LoginResult.AutoLoginInfoResult::Failure)
+                    .subscribeOn(schedulers.io())
+                    .observeOn(schedulers.ui())
+                    .startWith(LoginResult.AutoLoginInfoResult.InFlight)
+            }
         }
 
     private val loginClickActionTransformer =
         ObservableTransformer<LoginAction.ClickLoginAction, LoginResult.ClickLoginResult> { actions ->
-            actions
-                .flatMap { o ->
-                    val (username, password) = o
-                    when (username.isNullOrEmpty() || password.isNullOrEmpty()) {
-                        true -> onLoginParamEmptyResult()
-                        false -> repository
-                            .login(username, password)
-                            .toObservable()
-                            .flatMap { either ->
-                                either.fold(::onLoginFailureResult, ::onLoginSuccessResult)
-                            }
-                    }
+            actions.flatMap { o ->
+                val (username, password) = o
+                when (username.isNullOrEmpty() || password.isNullOrEmpty()) {
+                    true -> onLoginParamEmptyResult()
+                    false -> repository
+                        .login(username, password)
+                        .toObservable()
+                        .flatMap { either ->
+                            either.fold(::onLoginFailureResult, ::onLoginSuccessResult)
+                        }
+                        .onErrorReturn(LoginResult.ClickLoginResult::Failure)
+                        .subscribeOn(schedulers.io())
+                        .observeOn(schedulers.ui())
+                        .startWith(LoginResult.ClickLoginResult.InFlight)
                 }
-                .onErrorReturn(LoginResult.ClickLoginResult::Failure)
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .startWith(LoginResult.ClickLoginResult.InFlight)
+            }
         }
 
     private fun onLoginParamEmptyResult(): Observable<LoginResult.ClickLoginResult> =
@@ -75,6 +76,6 @@ class LoginActionProcessorHolder(
                                 all !is LoginAction.ClickLoginAction
                     }.flatMapErrorActionObservable()
                 )
-            }
+            }.retry()
         }
 }

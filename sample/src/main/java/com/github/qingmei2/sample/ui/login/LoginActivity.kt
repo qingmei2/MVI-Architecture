@@ -2,10 +2,10 @@ package com.github.qingmei2.sample.ui.login
 
 import android.view.View
 import com.github.qingmei2.mvi.base.view.activity.BaseActivity
-import com.github.qingmei2.sample.utils.toast
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.ui.main.MainActivity
+import com.github.qingmei2.sample.utils.toast
 import com.jakewharton.rxbinding3.view.clicks
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
@@ -22,7 +22,7 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     private val loginClicksIntentPublisher =
-            PublishSubject.create<LoginIntent.LoginClicksIntent>()
+        PublishSubject.create<LoginIntent.LoginClicksIntent>()
 
     override val layoutId: Int = R.layout.activity_login
 
@@ -35,23 +35,23 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
     }
 
     override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
-            loginClicksIntentPublisher
+        loginClicksIntentPublisher
     )
 
     private fun bind() {
         btnLogin.clicks()
-                .map {
-                    LoginIntent.LoginClicksIntent(
-                            username = tvUsername.text.toString(),
-                            password = tvPassword.text.toString()
-                    )
-                }
-                .autoDisposable(scopeProvider)
-                .subscribe(loginClicksIntentPublisher)
+            .map {
+                LoginIntent.LoginClicksIntent(
+                    username = tvUsername.text.toString(),
+                    password = tvPassword.text.toString()
+                )
+            }
+            .autoDisposable(scopeProvider)
+            .subscribe(loginClicksIntentPublisher)
 
         mViewModel.states()
-                .autoDisposable(scopeProvider)
-                .subscribe(this::render)
+            .autoDisposable(scopeProvider)
+            .subscribe(this::render)
 
         mViewModel.processIntents(intents())
     }
