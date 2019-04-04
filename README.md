@@ -67,6 +67,23 @@
 
 * [Timber: A logger with a small, extensible API which provides utility on top of Android's normal Log class.](https://github.com/JakeWharton/timber)
 
+## How to study MVI
+
+> * [Part 1: Model
+](http://hannesdorfmann.com/android/mosby3-mvi-1)
+> * [Part 2: View and Intent](http://hannesdorfmann.com/android/mosby3-mvi-2)
+> * [Part 3: State Reducer](http://hannesdorfmann.com/android/mosby3-mvi-3)
+> * [Part 4: Independent UI Components
+](http://hannesdorfmann.com/android/mosby3-mvi-4)
+> * [Part 5: Debugging with ease
+](http://hannesdorfmann.com/android/mosby3-mvi-5)
+> * [Part 6: Restoring State
+](http://hannesdorfmann.com/android/mosby3-mvi-6)
+> * [Part 7: Timing (SingleLiveEvent problem)
+](http://hannesdorfmann.com/android/mosby3-mvi-7)
+> * [Part 8: In-App Navigation
+](http://hannesdorfmann.com/android/mosby3-mvi-8)
+
 ## Thanks to
 
 :art: The UI design of this project refers to [gitme](https://github.com/flutterchina/gitme).
