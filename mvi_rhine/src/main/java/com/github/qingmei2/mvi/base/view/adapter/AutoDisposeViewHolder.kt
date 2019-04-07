@@ -12,18 +12,37 @@ import io.reactivex.subjects.BehaviorSubject
 @Suppress("LeakingThis")
 open class AutoDisposeViewHolder(
     itemView: View,
-    mAdapter: AutoDisposeAdapter<*>
+    eventProvider: AutoDisposeViewHolderEventsProvider
 ) : RecyclerView.ViewHolder(itemView), LifecycleScopeProvider<AutoDisposeViewHolder.ViewHolderEvent> {
 
     private val lifecycleEvents: BehaviorSubject<AutoDisposeViewHolder.ViewHolderEvent> =
-        BehaviorSubject.createDefault(AutoDisposeViewHolder.ViewHolderEvent.ON_BINDS)
+        BehaviorSubject.createDefault(AutoDisposeViewHolder.ViewHolderEvent.OnBinds)
 
     init {
-        mAdapter.autoDisposeViewHolderEvents.autoDisposable(this).subscribe(lifecycleEvents)
+        eventProvider
+            .providesObservable()
+            .map { event ->
+                when (event) {
+                    is ViewHolderEvent.OnUnbindsPosition -> when (adapterPosition) {
+                        event.position -> ViewHolderEvent.OnUnbindsForce
+                        else -> event
+                    }
+                    is ViewHolderEvent.OnBinds -> event
+                    is ViewHolderEvent.OnUnbindsForce -> event
+                }
+            }
+            .filter { it is ViewHolderEvent.OnUnbindsPosition }
+            .autoDisposable(this)
+            .subscribe(lifecycleEvents)
     }
 
-    enum class ViewHolderEvent {
-        ON_BINDS, ON_UNBINDS
+    sealed class ViewHolderEvent {
+
+        object OnBinds : ViewHolderEvent()
+
+        data class OnUnbindsPosition(val position: Int) : ViewHolderEvent()
+
+        object OnUnbindsForce : ViewHolderEvent()
     }
 
     override fun lifecycle(): Observable<ViewHolderEvent> {
@@ -42,8 +61,8 @@ open class AutoDisposeViewHolder(
 
         private val CORRESPONDING_EVENTS = CorrespondingEventsFunction<AutoDisposeViewHolder.ViewHolderEvent> { event ->
             when (event) {
-                AutoDisposeViewHolder.ViewHolderEvent.ON_BINDS ->
-                    AutoDisposeViewHolder.ViewHolderEvent.ON_UNBINDS
+                AutoDisposeViewHolder.ViewHolderEvent.OnBinds ->
+                    AutoDisposeViewHolder.ViewHolderEvent.OnUnbindsForce
                 else -> throw LifecycleEndedException(
                     "Cannot binds lifecycle after onUnbinds."
                 )

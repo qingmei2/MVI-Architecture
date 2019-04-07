@@ -40,7 +40,7 @@ class ReposPagedListAdapter : PagedListAdapter<Repo, ReposPagedListViewHolder>(d
     }
 }
 
-class ReposPagedListViewHolder(private val rootView: View) : RecyclerView.ViewHolder(rootView) {
+class ReposPagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
 
     private val mBtnAvatar: ConstraintLayout = rootView.findViewById(R.id.btnAvatar)
     private val mBtnRoot: ConstraintLayout = rootView.findViewById(R.id.btnRoot)

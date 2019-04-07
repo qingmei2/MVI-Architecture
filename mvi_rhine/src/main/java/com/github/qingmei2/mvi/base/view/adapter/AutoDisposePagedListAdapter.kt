@@ -11,8 +11,8 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 @Suppress("LeakingThis")
-abstract class AutoDisposeAdapter<VH : RecyclerView.ViewHolder>(lifecycleOwner: LifecycleOwner) :
-    RecyclerView.Adapter<VH>(), LifecycleScopeProvider<AutoDisposeAdapter.AdapterEvent>,
+abstract class AutoDisposePagedListAdapter<VH : RecyclerView.ViewHolder>(lifecycleOwner: LifecycleOwner) :
+    RecyclerView.Adapter<VH>(), LifecycleScopeProvider<AutoDisposePagedListAdapter.AdapterEvent>,
     DefaultLifecycleObserver, AutoDisposeViewHolderEventsProvider {
 
     init {
@@ -23,12 +23,12 @@ abstract class AutoDisposeAdapter<VH : RecyclerView.ViewHolder>(lifecycleOwner: 
         ON_CREATED, ON_DESTROY
     }
 
-    private val mLifecycleEvents: BehaviorSubject<AutoDisposeAdapter.AdapterEvent> =
-        BehaviorSubject.createDefault(AutoDisposeAdapter.AdapterEvent.ON_CREATED)
+    private val mLifecycleEvents: BehaviorSubject<AutoDisposePagedListAdapter.AdapterEvent> =
+        BehaviorSubject.createDefault(AutoDisposePagedListAdapter.AdapterEvent.ON_CREATED)
     private val mViewHolderLifecycleEvents: PublishSubject<AutoDisposeViewHolder.ViewHolderEvent> =
         PublishSubject.create()
 
-    override fun lifecycle(): Observable<AutoDisposeAdapter.AdapterEvent> {
+    override fun lifecycle(): Observable<AutoDisposePagedListAdapter.AdapterEvent> {
         return mLifecycleEvents.hide()
     }
 
@@ -59,7 +59,7 @@ abstract class AutoDisposeAdapter<VH : RecyclerView.ViewHolder>(lifecycleOwner: 
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        mLifecycleEvents.onNext(AutoDisposeAdapter.AdapterEvent.ON_DESTROY)
+        mLifecycleEvents.onNext(AutoDisposePagedListAdapter.AdapterEvent.ON_DESTROY)
         postViewHolderEvent(AutoDisposeViewHolder.ViewHolderEvent.OnUnbindsForce)
     }
 
@@ -73,14 +73,15 @@ abstract class AutoDisposeAdapter<VH : RecyclerView.ViewHolder>(lifecycleOwner: 
 
     companion object {
 
-        private val CORRESPONDING_EVENTS = CorrespondingEventsFunction<AutoDisposeAdapter.AdapterEvent> { event ->
-            when (event) {
-                AutoDisposeAdapter.AdapterEvent.ON_CREATED ->
-                    AutoDisposeAdapter.AdapterEvent.ON_DESTROY
-                else -> throw LifecycleEndedException(
-                    "Cannot bind to ViewModel lifecycle after onCleared."
-                )
+        private val CORRESPONDING_EVENTS =
+            CorrespondingEventsFunction<AutoDisposePagedListAdapter.AdapterEvent> { event ->
+                when (event) {
+                    AutoDisposePagedListAdapter.AdapterEvent.ON_CREATED ->
+                        AutoDisposePagedListAdapter.AdapterEvent.ON_DESTROY
+                    else -> throw LifecycleEndedException(
+                        "Cannot bind to ViewModel lifecycle after onCleared."
+                    )
+                }
             }
-        }
     }
 }
