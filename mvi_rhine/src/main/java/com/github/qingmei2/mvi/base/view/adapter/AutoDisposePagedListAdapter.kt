@@ -1,5 +1,6 @@
 package com.github.qingmei2.mvi.base.view.adapter
 
+import androidx.annotation.CallSuper
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagedListAdapter
@@ -44,12 +45,14 @@ abstract class AutoDisposePagedListAdapter<T : Any, VH : RecyclerView.ViewHolder
         return mLifecycleEvents.value
     }
 
+    @CallSuper
     override fun onBindViewHolder(holder: VH, position: Int) {
         when (holder) {
             is AutoDisposeViewHolder -> postViewHolderEvent(AutoDisposeViewHolder.ViewHolderEvent.OnBinds)
         }
     }
 
+    @CallSuper
     override fun onViewRecycled(holder: VH) {
         super.onViewRecycled(holder)
         when (holder) {
@@ -61,6 +64,7 @@ abstract class AutoDisposePagedListAdapter<T : Any, VH : RecyclerView.ViewHolder
         }
     }
 
+    @CallSuper
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         mLifecycleEvents.onNext(AutoDisposePagedListAdapter.AdapterEvent.ON_DESTROY)

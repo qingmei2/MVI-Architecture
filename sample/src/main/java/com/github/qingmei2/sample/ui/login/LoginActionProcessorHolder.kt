@@ -19,7 +19,8 @@ class LoginActionProcessorHolder(
         ObservableTransformer<LoginAction.InitialUiAction, LoginResult.AutoLoginInfoResult> { actions ->
             actions.flatMap {
                 Observable
-                    .zip(repository.prefsUser().toObservable(),
+                    .zip(
+                        repository.prefsUser().toObservable(),
                         repository.prefsAutoLogin().toObservable(),
                         BiFunction { either: Either<Errors, LoginEntity>, autoLogin: Boolean ->
                             either.fold({

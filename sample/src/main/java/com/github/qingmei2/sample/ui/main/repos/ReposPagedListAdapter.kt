@@ -6,26 +6,34 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.paging.PagedListAdapter
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import com.github.qingmei2.mvi.base.view.adapter.AutoDisposePagedListAdapter
+import com.github.qingmei2.mvi.base.view.adapter.AutoDisposeViewHolder
+import com.github.qingmei2.mvi.base.view.adapter.AutoDisposeViewHolderEventsProvider
 import com.github.qingmei2.mvi.image.GlideApp
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Repo
+import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
-class ReposPagedListAdapter : PagedListAdapter<Repo, ReposPagedListViewHolder>(diffCallback) {
+class ReposPagedListAdapter(
+    lifecycleOwner: LifecycleOwner
+) : AutoDisposePagedListAdapter<Repo, ReposPagedListViewHolder>(lifecycleOwner, diffCallback) {
 
     private val eventSubject: PublishSubject<RepoPagedListItemEvent> = PublishSubject.create()
 
     fun observeEvent(): Observable<RepoPagedListItemEvent> = eventSubject
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReposPagedListViewHolder =
-        ReposPagedListViewHolder.create(parent)
+        ReposPagedListViewHolder.create(parent, this)
 
-    override fun onBindViewHolder(holder: ReposPagedListViewHolder, position: Int) =
+    override fun onBindViewHolder(holder: ReposPagedListViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
         holder.binds(getItem(position)!!, eventSubject)
+    }
 
     companion object {
         private val diffCallback: DiffUtil.ItemCallback<Repo> =
@@ -40,7 +48,10 @@ class ReposPagedListAdapter : PagedListAdapter<Repo, ReposPagedListViewHolder>(d
     }
 }
 
-class ReposPagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
+class ReposPagedListViewHolder(
+    rootView: View,
+    provider: AutoDisposeViewHolderEventsProvider
+) : AutoDisposeViewHolder(rootView, provider) {
 
     private val mBtnAvatar: ConstraintLayout = rootView.findViewById(R.id.btnAvatar)
     private val mBtnRoot: ConstraintLayout = rootView.findViewById(R.id.btnRoot)
@@ -59,12 +70,18 @@ class ReposPagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootVie
         subject: PublishSubject<RepoPagedListItemEvent>
     ) {
 
-        mBtnRoot.setOnClickListener {
-            subject.onNext(RepoPagedListItemEvent.ClickEvent(data.htmlUrl))
-        }
-        mBtnAvatar.setOnClickListener {
-            subject.onNext(RepoPagedListItemEvent.ClickEvent(data.owner.htmlUrl))
-        }
+//        mBtnRoot.clicks()
+//            .map { RepoPagedListItemEvent.ClickEvent(data.htmlUrl) }
+//            .autoDisposable(this)
+//            .subscribe(subject)
+//        mBtnAvatar.clicks()
+//            .map { RepoPagedListItemEvent.ClickEvent(data.owner.htmlUrl) }
+//            .autoDisposable(this)
+//            .subscribe(subject)
+
+        Observable.intervalRange(0, 10000, 0, 1, TimeUnit.SECONDS)
+            .autoDisposable(this)
+            .subscribe()
 
         GlideApp.with(mIvAvatar.context)
             .load(data.owner.avatarUrl)
@@ -99,15 +116,17 @@ class ReposPagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootVie
 
     companion object {
 
-        fun create(parent: ViewGroup): ReposPagedListViewHolder =
+        fun create(
+            parent: ViewGroup,
+            provider: AutoDisposeViewHolderEventsProvider
+        ): ReposPagedListViewHolder =
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_repos_repo, parent, false)
-                .run(::ReposPagedListViewHolder)
+                .run { ReposPagedListViewHolder(this, provider) }
     }
 }
 
 sealed class RepoPagedListItemEvent {
 
     data class ClickEvent(val url: String) : RepoPagedListItemEvent()
-
 }

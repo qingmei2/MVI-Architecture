@@ -31,7 +31,7 @@ open class AutoDisposeViewHolder(
                     is ViewHolderEvent.OnUnbindsForce -> event
                 }
             }
-            .filter { it is ViewHolderEvent.OnUnbindsPosition }
+            .filter { it !is ViewHolderEvent.OnUnbindsPosition }
             .autoDisposable(this)
             .subscribe(lifecycleEvents)
     }
@@ -61,7 +61,8 @@ open class AutoDisposeViewHolder(
 
         private val CORRESPONDING_EVENTS = CorrespondingEventsFunction<AutoDisposeViewHolder.ViewHolderEvent> { event ->
             when (event) {
-                AutoDisposeViewHolder.ViewHolderEvent.OnBinds ->
+                AutoDisposeViewHolder.ViewHolderEvent.OnBinds,
+                AutoDisposeViewHolder.ViewHolderEvent.OnUnbindsForce ->
                     AutoDisposeViewHolder.ViewHolderEvent.OnUnbindsForce
                 else -> throw LifecycleEndedException(
                     "Cannot binds lifecycle after onUnbinds."

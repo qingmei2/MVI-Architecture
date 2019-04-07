@@ -34,9 +34,9 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
         bind()
     }
 
-    override fun intents(): Observable<LoginIntent> = Observable.mergeArray(
+    override fun intents(): Observable<LoginIntent> = Observable.mergeArray<LoginIntent>(
         loginClicksIntentPublisher
-    )
+    ).startWith(LoginIntent.InitialIntent)
 
     private fun bind() {
         btnLogin.clicks()

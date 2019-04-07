@@ -133,7 +133,7 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
     }
 
     private fun initPagedListAdapter(pageList: PagedList<Repo>) {
-        val mAdapter = ReposPagedListAdapter()
+        val mAdapter = ReposPagedListAdapter(this)
         mRecyclerView.adapter = mAdapter
         mAdapter.submitList(pageList)
         mAdapter.observeEvent()
