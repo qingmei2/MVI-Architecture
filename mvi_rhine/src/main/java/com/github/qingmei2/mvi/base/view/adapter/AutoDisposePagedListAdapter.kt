@@ -2,6 +2,8 @@ package com.github.qingmei2.mvi.base.view.adapter
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.uber.autodispose.lifecycle.CorrespondingEventsFunction
 import com.uber.autodispose.lifecycle.LifecycleEndedException
@@ -11,9 +13,11 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 @Suppress("LeakingThis")
-abstract class AutoDisposePagedListAdapter<VH : RecyclerView.ViewHolder>(lifecycleOwner: LifecycleOwner) :
-    RecyclerView.Adapter<VH>(), LifecycleScopeProvider<AutoDisposePagedListAdapter.AdapterEvent>,
-    DefaultLifecycleObserver, AutoDisposeViewHolderEventsProvider {
+abstract class AutoDisposePagedListAdapter<T : Any, VH : RecyclerView.ViewHolder>(
+    lifecycleOwner: LifecycleOwner,
+    differ: DiffUtil.ItemCallback<T>
+) : PagedListAdapter<T, VH>(differ), DefaultLifecycleObserver, AutoDisposeViewHolderEventsProvider,
+    LifecycleScopeProvider<AutoDisposePagedListAdapter.AdapterEvent> {
 
     init {
         lifecycleOwner.lifecycle.addObserver(this)
