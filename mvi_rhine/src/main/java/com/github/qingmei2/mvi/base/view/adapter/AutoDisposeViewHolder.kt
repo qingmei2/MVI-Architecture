@@ -10,31 +10,11 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
 @Suppress("LeakingThis")
-open class AutoDisposeViewHolder(
-    itemView: View,
-    eventProvider: AutoDisposeViewHolderEventsProvider
-) : RecyclerView.ViewHolder(itemView), LifecycleScopeProvider<AutoDisposeViewHolder.ViewHolderEvent> {
+open class AutoDisposeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+    LifecycleScopeProvider<AutoDisposeViewHolder.ViewHolderEvent> {
 
     private val lifecycleEvents: BehaviorSubject<AutoDisposeViewHolder.ViewHolderEvent> =
         BehaviorSubject.createDefault(AutoDisposeViewHolder.ViewHolderEvent.OnBinds)
-
-    init {
-        eventProvider
-            .providesObservable()
-            .map { event ->
-                when (event) {
-                    is ViewHolderEvent.OnUnbindsPosition -> when (adapterPosition) {
-                        event.position -> ViewHolderEvent.OnUnbindsForce
-                        else -> event
-                    }
-                    is ViewHolderEvent.OnBinds -> event
-                    is ViewHolderEvent.OnUnbindsForce -> event
-                }
-            }
-            .filter { it !is ViewHolderEvent.OnUnbindsPosition }
-            .autoDisposable(this)
-            .subscribe(lifecycleEvents)
-    }
 
     sealed class ViewHolderEvent {
 
@@ -43,6 +23,28 @@ open class AutoDisposeViewHolder(
         data class OnUnbindsPosition(val position: Int) : ViewHolderEvent()
 
         object OnUnbindsForce : ViewHolderEvent()
+    }
+
+    fun resetBindEvents(eventProvider: AutoDisposeViewHolderEventsProvider) {
+        lifecycleEvents.onNext(AutoDisposeViewHolder.ViewHolderEvent.OnBinds)
+        eventProvider
+            .providesObservable()
+            .map { event ->
+                when (event) {
+                    is ViewHolderEvent.OnUnbindsPosition -> {
+                        val current = event.position == adapterPosition
+                        when (current) {
+                            true -> ViewHolderEvent.OnUnbindsForce
+                            false -> event
+                        }
+                    }
+                    is ViewHolderEvent.OnBinds -> event
+                    is ViewHolderEvent.OnUnbindsForce -> event
+                }
+            }
+            .filter { it !is ViewHolderEvent.OnUnbindsPosition }
+            .autoDisposable(this)
+            .subscribe(lifecycleEvents)
     }
 
     override fun lifecycle(): Observable<ViewHolderEvent> {
@@ -61,8 +63,7 @@ open class AutoDisposeViewHolder(
 
         private val CORRESPONDING_EVENTS = CorrespondingEventsFunction<AutoDisposeViewHolder.ViewHolderEvent> { event ->
             when (event) {
-                AutoDisposeViewHolder.ViewHolderEvent.OnBinds,
-                AutoDisposeViewHolder.ViewHolderEvent.OnUnbindsForce ->
+                AutoDisposeViewHolder.ViewHolderEvent.OnBinds ->
                     AutoDisposeViewHolder.ViewHolderEvent.OnUnbindsForce
                 else -> throw LifecycleEndedException(
                     "Cannot binds lifecycle after onUnbinds."

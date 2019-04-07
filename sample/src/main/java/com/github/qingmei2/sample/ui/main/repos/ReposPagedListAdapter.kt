@@ -10,14 +10,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import com.github.qingmei2.mvi.base.view.adapter.AutoDisposePagedListAdapter
 import com.github.qingmei2.mvi.base.view.adapter.AutoDisposeViewHolder
-import com.github.qingmei2.mvi.base.view.adapter.AutoDisposeViewHolderEventsProvider
 import com.github.qingmei2.mvi.image.GlideApp
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Repo
+import com.jakewharton.rxbinding3.view.clicks
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
 
 class ReposPagedListAdapter(
     lifecycleOwner: LifecycleOwner
@@ -28,7 +27,7 @@ class ReposPagedListAdapter(
     fun observeEvent(): Observable<RepoPagedListItemEvent> = eventSubject
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReposPagedListViewHolder =
-        ReposPagedListViewHolder.create(parent, this)
+        ReposPagedListViewHolder.create(parent)
 
     override fun onBindViewHolder(holder: ReposPagedListViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
@@ -48,10 +47,7 @@ class ReposPagedListAdapter(
     }
 }
 
-class ReposPagedListViewHolder(
-    rootView: View,
-    provider: AutoDisposeViewHolderEventsProvider
-) : AutoDisposeViewHolder(rootView, provider) {
+class ReposPagedListViewHolder(rootView: View) : AutoDisposeViewHolder(rootView) {
 
     private val mBtnAvatar: ConstraintLayout = rootView.findViewById(R.id.btnAvatar)
     private val mBtnRoot: ConstraintLayout = rootView.findViewById(R.id.btnRoot)
@@ -69,19 +65,14 @@ class ReposPagedListViewHolder(
         data: Repo,
         subject: PublishSubject<RepoPagedListItemEvent>
     ) {
-
-//        mBtnRoot.clicks()
-//            .map { RepoPagedListItemEvent.ClickEvent(data.htmlUrl) }
-//            .autoDisposable(this)
-//            .subscribe(subject)
-//        mBtnAvatar.clicks()
-//            .map { RepoPagedListItemEvent.ClickEvent(data.owner.htmlUrl) }
-//            .autoDisposable(this)
-//            .subscribe(subject)
-
-        Observable.intervalRange(0, 10000, 0, 1, TimeUnit.SECONDS)
+        mBtnRoot.clicks()
+            .map { RepoPagedListItemEvent.ClickEvent(data.htmlUrl) }
             .autoDisposable(this)
-            .subscribe()
+            .subscribe(subject)
+        mBtnAvatar.clicks()
+            .map { RepoPagedListItemEvent.ClickEvent(data.owner.htmlUrl) }
+            .autoDisposable(this)
+            .subscribe(subject)
 
         GlideApp.with(mIvAvatar.context)
             .load(data.owner.avatarUrl)
@@ -116,13 +107,10 @@ class ReposPagedListViewHolder(
 
     companion object {
 
-        fun create(
-            parent: ViewGroup,
-            provider: AutoDisposeViewHolderEventsProvider
-        ): ReposPagedListViewHolder =
+        fun create(parent: ViewGroup): ReposPagedListViewHolder =
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_repos_repo, parent, false)
-                .run { ReposPagedListViewHolder(this, provider) }
+                .run(::ReposPagedListViewHolder)
     }
 }
 

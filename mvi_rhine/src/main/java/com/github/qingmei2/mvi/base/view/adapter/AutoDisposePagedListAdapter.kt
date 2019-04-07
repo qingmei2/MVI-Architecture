@@ -48,7 +48,9 @@ abstract class AutoDisposePagedListAdapter<T : Any, VH : RecyclerView.ViewHolder
     @CallSuper
     override fun onBindViewHolder(holder: VH, position: Int) {
         when (holder) {
-            is AutoDisposeViewHolder -> postViewHolderEvent(AutoDisposeViewHolder.ViewHolderEvent.OnBinds)
+            is AutoDisposeViewHolder -> {
+                holder.resetBindEvents(this)
+            }
         }
     }
 
