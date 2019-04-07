@@ -34,12 +34,25 @@ class LoginViewModel(
             }
         }
 
+    private val processViewResultAfter: (LoginViewState) -> Observable<LoginViewState>
+        get() = { viewState ->
+            when (viewState.uiEvents) {
+                is LoginViewState.LoginUiEvents.JumpMain -> {
+                    Observable
+                        .just(viewState.copy(uiEvents = null))
+                        .startWith(viewState)
+                }
+                else -> Observable.just(viewState)
+            }
+        }
+
     private fun compose(): Observable<LoginViewState> {
         return intentsSubject
             .compose(intentFilter)
             .map(this::actionFromIntent)
             .compose(processorHolder.actionProcessor)
             .scan(LoginViewState.idle(), reducer)
+            .flatMap(processViewResultAfter)
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)
