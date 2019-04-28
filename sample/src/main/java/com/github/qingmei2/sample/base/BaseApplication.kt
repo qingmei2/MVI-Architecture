@@ -2,6 +2,7 @@ package com.github.qingmei2.sample.base
 
 import android.app.Application
 import android.content.Context
+import com.facebook.stetho.Stetho
 import com.github.qingmei2.mvi.logger.initLogger
 import com.github.qingmei2.sample.BuildConfig
 import com.github.qingmei2.sample.di.*
@@ -32,7 +33,11 @@ open class BaseApplication : Application(), KodeinAware {
         INSTANCE = this
 
         initLogger(BuildConfig.DEBUG)
-        initLeakCanary()
+        
+        if (BuildConfig.DEBUG) {
+            initStetho()
+            initLeakCanary()
+        }
     }
 
     private fun initLeakCanary() {
@@ -40,6 +45,10 @@ open class BaseApplication : Application(), KodeinAware {
             return
         }
         LeakCanary.install(this)
+    }
+
+    private fun initStetho() {
+        Stetho.initializeWithDefaults(this)
     }
 
     companion object {
