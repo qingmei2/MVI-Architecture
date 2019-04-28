@@ -1,14 +1,11 @@
 package com.github.qingmei2.sample.ui.login
 
-import arrow.core.Either
 import com.github.qingmei2.mvi.ext.reactivex.flatMapErrorActionObservable
 import com.github.qingmei2.sample.entity.Errors
-import com.github.qingmei2.sample.entity.LoginEntity
-import com.github.qingmei2.sample.entity.LoginUser
+import com.github.qingmei2.sample.entity.UserInfo
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import io.reactivex.functions.BiFunction
 
 class LoginActionProcessorHolder(
     private val repository: LoginDataSourceRepository,
@@ -18,17 +15,18 @@ class LoginActionProcessorHolder(
     private val initialUiActionTransformer =
         ObservableTransformer<LoginAction.InitialUiAction, LoginResult.AutoLoginInfoResult> { actions ->
             actions.flatMap {
-                Observable
-                    .zip(
-                        repository.prefsUser().toObservable(),
-                        repository.prefsAutoLogin().toObservable(),
-                        BiFunction { either: Either<Errors, LoginEntity>, autoLogin: Boolean ->
-                            either.fold({
-                                LoginResult.AutoLoginInfoResult.NoUserData
-                            }, { autoLoginInfo ->
-                                LoginResult.AutoLoginInfoResult.Success(autoLoginInfo, autoLogin)
-                            })
-                        })
+                repository.fetchAutoLogin()
+                    .toObservable()
+                    .map { event ->
+                        when (event.password.isEmpty() || event.username.isEmpty()) {
+                            true -> LoginResult.AutoLoginInfoResult.NoUserData
+                            false -> LoginResult.AutoLoginInfoResult.Success(
+                                event.username,
+                                event.password,
+                                event.autoLogin
+                            )
+                        }
+                    }
                     .onErrorReturn(LoginResult.AutoLoginInfoResult::Failure)
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
@@ -63,7 +61,7 @@ class LoginActionProcessorHolder(
     private fun onLoginFailureResult(error: Errors): Observable<LoginResult.ClickLoginResult> =
         Observable.just(LoginResult.ClickLoginResult.Failure(error))
 
-    private fun onLoginSuccessResult(loginUser: LoginUser): Observable<LoginResult.ClickLoginResult> =
+    private fun onLoginSuccessResult(loginUser: UserInfo): Observable<LoginResult.ClickLoginResult> =
         Observable.just(LoginResult.ClickLoginResult.Success(loginUser))
 
     internal val actionProcessor =

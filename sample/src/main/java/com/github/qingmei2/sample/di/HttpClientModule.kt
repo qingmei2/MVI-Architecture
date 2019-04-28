@@ -1,5 +1,6 @@
 package com.github.qingmei2.sample.di
 
+import com.github.qingmei2.sample.BuildConfig
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -36,7 +37,12 @@ val httpClientModule = Kodein.Module(HTTP_CLIENT_MODULE_TAG) {
     }
 
     bind<Interceptor>(HTTP_CLIENT_MODULE_INTERCEPTOR_LOG_TAG) with singleton {
-        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        HttpLoggingInterceptor().apply {
+            level = when (BuildConfig.DEBUG) {
+                true -> HttpLoggingInterceptor.Level.BODY
+                false -> HttpLoggingInterceptor.Level.NONE
+            }
+        }
     }
 
     bind<OkHttpClient>() with singleton {

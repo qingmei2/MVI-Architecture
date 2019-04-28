@@ -8,7 +8,7 @@ import com.github.qingmei2.mvi.ext.reactivex.throttleFirstClicks
 import com.github.qingmei2.mvi.image.GlideApp
 import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Errors
-import com.github.qingmei2.sample.entity.LoginUser
+import com.github.qingmei2.sample.entity.UserInfo
 import com.github.qingmei2.sample.utils.toast
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
@@ -73,7 +73,7 @@ class ProfileFragment : BaseFragment<ProfileIntent, ProfileViewState>() {
         }
     }
 
-    private fun onInitialResult(user: LoginUser) {
+    private fun onInitialResult(user: UserInfo) {
         GlideApp.with(context!!)
             .load(user.avatarUrl)
             .apply(RequestOptions().circleCrop())

@@ -26,6 +26,7 @@ open class BaseApplication : Application(), KodeinAware {
         import(httpClientModule)
         import(prefsModule)
         import(schedulersModule)
+        import(globalRepositoryModule)
     }
 
     override fun onCreate() {

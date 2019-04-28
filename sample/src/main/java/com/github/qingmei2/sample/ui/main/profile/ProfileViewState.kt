@@ -1,7 +1,7 @@
 package com.github.qingmei2.sample.ui.main.profile
 
 import com.github.qingmei2.mvi.base.viewstate.IViewState
-import com.github.qingmei2.sample.entity.LoginUser
+import com.github.qingmei2.sample.entity.UserInfo
 
 data class ProfileViewState(
     val error: Throwable?,
@@ -23,5 +23,5 @@ data class ProfileViewState(
 
 sealed class ProfileUIEvent {
 
-    data class InitialSuccess(val user: LoginUser) : ProfileUIEvent()
+    data class InitialSuccess(val user: UserInfo) : ProfileUIEvent()
 }

@@ -33,9 +33,7 @@ val loginKodeinModule = Kodein.Module(LOGIN_MODULE_TAG) {
     }
 
     bind<LoginLocalDataSource>() with singleton {
-        LoginLocalDataSource(
-            prefs = instance()
-        )
+        LoginLocalDataSource(userRepository = instance())
     }
 
     bind<LoginDataSourceRepository>() with singleton {

@@ -2,7 +2,7 @@ package com.github.qingmei2.sample.ui.login
 
 import com.github.qingmei2.mvi.base.viewstate.IViewState
 import com.github.qingmei2.sample.entity.LoginEntity
-import com.github.qingmei2.sample.entity.LoginUser
+import com.github.qingmei2.sample.entity.UserInfo
 
 data class LoginViewState(
         val isLoading: Boolean,
@@ -12,7 +12,7 @@ data class LoginViewState(
 
     sealed class LoginUiEvents {
 
-        data class JumpMain(val loginUser: LoginUser) : LoginUiEvents()
+        data class JumpMain(val loginUser: UserInfo) : LoginUiEvents()
 
         data class TryAutoLogin(
                 val loginEntity: LoginEntity,

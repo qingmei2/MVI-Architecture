@@ -120,7 +120,7 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
                     .doOnNext { event ->
                         when (event) {
                             is HomePagedListItemEvent.ClickEvent -> {
-                                BaseApplication.INSTANCE.jumpBrowser(event.url)
+                                context?.jumpBrowser(event.url)
                             }
                         }
                     }

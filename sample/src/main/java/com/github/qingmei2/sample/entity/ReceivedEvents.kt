@@ -1,31 +1,50 @@
 package com.github.qingmei2.sample.entity
 
+import androidx.room.*
+import com.github.qingmei2.sample.utils.fromJson
+import com.github.qingmei2.sample.utils.toJson
 import com.google.gson.annotations.SerializedName
 
+@TypeConverters(ReceivedEventsPersistentConverter::class)
+@Entity(tableName = "user_received_events")
 data class ReceivedEvent(
-    val id: String,
+    @PrimaryKey
+    val id: Long,
+    @ColumnInfo(name = "type")
     val type: Type,
+    @ColumnInfo(name = "actor")
     val actor: Actor,
+    @ColumnInfo(name = "repo")
     val repo: ReceivedEventRepo,
-    val public: Boolean,
-    @SerializedName("created_at") val createdAt: String?
-)
+    @SerializedName("public")
+    @ColumnInfo(name = "is_public")
+    val isPublic: Boolean,
+    @SerializedName("created_at")
+    @ColumnInfo(name = "created_at")
+    val createdAt: String
+) {
+    var indexInResponse: Int = -1
+}
 
 data class Actor(
-    val id: Int,
+    @SerializedName("id")
+    val actorId: Int,
     val login: String,
-    @SerializedName("display_login") val displayLogin: String,
-    @SerializedName("gravatar_id") val gravatarId: String,
+    @SerializedName("display_login")
+    val displayLogin: String,
+    @SerializedName("gravatar_id")
+    val gravatarId: String,
     val url: String,
-    @SerializedName("avatar_url") val avatarUrl: String
+    @SerializedName("avatar_url")
+    val avatarUrl: String
 )
 
 data class ReceivedEventRepo(
-    val id: String,
+    @SerializedName("id")
+    val repoId: String,
     val name: String,
     val url: String
 )
-
 
 enum class Type {
     WatchEvent,
@@ -70,12 +89,36 @@ enum class Type {
     SecurityAdvisoryEvent,
     StatusEvent,
     TeamEvent,
-    TeamAddEvent,
+    TeamAddEvent
 }
 
-val DISPLAY_EVENT_TYPES: List<Type> = listOf(
+val SUPPORT_EVENT_TYPES: List<Type> = listOf(
     Type.WatchEvent,
     Type.ForkEvent,
     Type.PushEvent,
     Type.CreateEvent
 )
+
+class ReceivedEventsPersistentConverter {
+
+    // Actor
+    @TypeConverter
+    fun storeActorToString(data: Actor): String = data.toJson()
+
+    @TypeConverter
+    fun storeStringToActor(value: String): Actor = value.fromJson()
+
+    // ReceivedEventRepo
+    @TypeConverter
+    fun storeRepoToString(data: ReceivedEventRepo): String = data.toJson()
+
+    @TypeConverter
+    fun storeStringToRepo(value: String): ReceivedEventRepo = value.fromJson()
+
+    // Type
+    @TypeConverter
+    fun restoreEnum(enumName: String): Type = Type.valueOf(enumName)
+
+    @TypeConverter
+    fun saveEnumToString(enumType: Type) = enumType.name
+}
