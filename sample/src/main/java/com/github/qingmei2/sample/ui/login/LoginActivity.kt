@@ -64,8 +64,8 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
                 return
             }
             is LoginViewState.LoginUiEvents.TryAutoLogin -> {
-                val username = state.uiEvents.loginEntity.username
-                val password = state.uiEvents.loginEntity.password
+                val username = state.uiEvents.username
+                val password = state.uiEvents.password
                 tvUsername.setText(username.toCharArray(), 0, username.length)
                 tvPassword.setText(password.toCharArray(), 0, password.length)
                 if (state.uiEvents.autoLogin) {

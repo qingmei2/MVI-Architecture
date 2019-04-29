@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -64,16 +65,13 @@ class HomePagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView
 
         renderEvent(mTvEvent, data, subject)
 
-        val eventType = data.type
-
-        mIvEventType.setBackgroundResource(
-            when (eventType) {
-                Type.WatchEvent -> R.mipmap.ic_star_yellow_light
-                Type.CreateEvent,
-                Type.ForkEvent,
-                Type.PushEvent -> R.mipmap.ic_fork_green_light
-                else ->
-                    throw RuntimeException("$eventType can't be displayed.")
+        mIvEventType.setImageDrawable(
+            when (data.type) {
+                Type.WatchEvent ->
+                    ContextCompat.getDrawable(mIvEventType.context, R.mipmap.ic_star_yellow_light)
+                Type.CreateEvent, Type.ForkEvent, Type.PushEvent ->
+                    ContextCompat.getDrawable(mIvEventType.context, R.mipmap.ic_fork_green_light)
+                else -> null
             }
         )
 
@@ -91,7 +89,7 @@ class HomePagedListViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView
             Type.CreateEvent -> "created"
             Type.ForkEvent -> "forked"
             Type.PushEvent -> "pushed"
-            else -> throw RuntimeException("${data.type} can't be displayed.")
+            else -> data.type.name
         }
         val repo = data.repo.name
 

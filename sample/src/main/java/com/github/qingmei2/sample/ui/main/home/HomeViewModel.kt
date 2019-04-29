@@ -7,6 +7,7 @@ import com.github.qingmei2.mvi.ext.reactivex.notOfType
 import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
@@ -32,7 +33,7 @@ class HomeViewModel(
         return when (intent) {
             is HomeIntent.InitialIntent -> HomeAction.InitialAction
             is HomeIntent.RefreshIntent -> HomeAction.InitialAction
-            HomeIntent.ScrollToTopIntent -> HomeAction.ScrollToTopAction
+            is HomeIntent.ScrollToTopIntent -> HomeAction.ScrollToTopAction
             is HomeIntent.ScrollStateChangedIntent -> HomeAction.ScrollStateChangedAction(intent.state)
         }
     }
@@ -49,10 +50,19 @@ class HomeViewModel(
             .map(this::actionFromIntent)
             .compose(actionProcessorHolder.actionProcessor)
             .scan(HomeViewState.idle(), reducer)
+            .switchMap(specialEventProcessor)
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)
     }
+
+    private val specialEventProcessor: io.reactivex.functions.Function<HomeViewState, ObservableSource<HomeViewState>>
+        get() = io.reactivex.functions.Function { state ->
+            when (state.uiEvent == null) {
+                true -> Observable.just(state)
+                false -> Observable.just(state, state.copy(uiEvent = null))
+            }
+        }
 
     companion object {
 
@@ -80,11 +90,18 @@ class HomeViewModel(
                         previousState.copy(isRefreshing = false, error = result.error)
                     }
                 }
-                HomeResult.ScrollToTopResult ->
+                is HomeResult.ScrollToTopResult -> {
                     previousState.copy(
                         error = null,
                         uiEvent = HomeUIEvent.ScrollToTopEvent
                     )
+                }
+                is HomeResult.SwipeRefreshResult -> {
+                    previousState.copy(
+                        error = null,
+                        uiEvent = null
+                    )
+                }
             }
         }
     }

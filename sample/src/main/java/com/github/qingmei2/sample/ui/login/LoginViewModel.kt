@@ -93,7 +93,8 @@ class LoginViewModel(
                         previousState.copy(
                             isLoading = true,
                             uiEvents = LoginViewState.LoginUiEvents.TryAutoLogin(
-                                loginEntity = result.user,
+                                username = result.username,
+                                password = result.password,
                                 autoLogin = result.autoLogin
                             )
                         )

@@ -7,6 +7,8 @@ sealed class HomeResult {
 
     data class InitialResult(val pagedList: PagedList<ReceivedEvent>) : HomeResult()
 
+    object SwipeRefreshResult : HomeResult()
+
     sealed class LoadingPageResult : HomeResult() {
         data class InFlight(val isFirstlyLoad: Boolean) : LoadingPageResult()
         data class Success(val isFirstlyLoad: Boolean) : LoadingPageResult()

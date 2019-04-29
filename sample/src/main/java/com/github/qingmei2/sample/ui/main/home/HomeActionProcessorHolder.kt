@@ -1,23 +1,19 @@
 package com.github.qingmei2.sample.ui.main.home
 
-import arrow.core.left
-import com.github.qingmei2.mvi.ext.paging.IntPageKeyedData
-import com.github.qingmei2.mvi.ext.paging.IntPageKeyedDataSource
-import com.github.qingmei2.mvi.ext.paging.Paging
+import android.annotation.SuppressLint
+import androidx.paging.PagedList
 import com.github.qingmei2.mvi.ext.reactivex.flatMapErrorActionObservable
-import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.ReceivedEvent
-import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
-import com.github.qingmei2.sample.manager.UserManager
+import com.github.qingmei2.sample.repository.UserInfoRepository
 import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.subjects.PublishSubject
 
+@SuppressLint("CheckResult")
 class HomeActionProcessorHolder(
     private val repository: HomeRepository,
-    private val schedulerProvider: SchedulerProvider
+    private val userRepository: UserInfoRepository
 ) {
     private val receivedEventsLoadingEventSubject: PublishSubject<HomeResult.LoadingPageResult> =
         PublishSubject.create()
@@ -25,11 +21,46 @@ class HomeActionProcessorHolder(
     private val initialActionTransformer =
         ObservableTransformer<HomeAction.InitialAction, HomeResult.InitialResult> { action ->
             action.flatMap<HomeResult.InitialResult> {
-                Paging.buildPageKeyedDataSource(receivedEventDataSource)
-                    .map(HomeResult::InitialResult)
-                    .toObservable()
+                repository.getReceivedPagedList(
+                    boundaryCallback = object : PagedList.BoundaryCallback<ReceivedEvent>() {
+                        override fun onZeroItemsLoaded() {
+                            this@HomeActionProcessorHolder.onZeroItemsLoaded()
+                        }
+
+                        override fun onItemAtEndLoaded(itemAtEnd: ReceivedEvent) {
+                            this@HomeActionProcessorHolder.onItemAtEndLoaded(itemAtEnd)
+                        }
+                    }
+                ).map(HomeResult::InitialResult).toObservable()
             }
         }
+
+    private val swipeRefreshActionTransformer =
+        ObservableTransformer<HomeAction.SwipeRefreshAction, HomeResult.SwipeRefreshResult> { action ->
+            action.flatMap {
+                repository.swipeRefresh()
+                Observable.just(HomeResult.SwipeRefreshResult)
+            }
+        }
+
+    private fun onZeroItemsLoaded() {
+        repository.queryReceivedEventsByPage(userRepository.username, 1)
+            .map<HomeResult.LoadingPageResult> { HomeResult.LoadingPageResult.Success(true) }
+            .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
+            .startWith(HomeResult.LoadingPageResult.InFlight(true))
+            .toObservable()
+            .subscribe(receivedEventsLoadingEventSubject)
+    }
+
+    private fun onItemAtEndLoaded(itemAtEnd: ReceivedEvent) {
+        val currentPageIndex = (itemAtEnd.indexInResponse / 15) + 1
+        val nextPageIndex = currentPageIndex + 1
+        repository.queryReceivedEventsByPage(userRepository.username, nextPageIndex)
+            .map<HomeResult.LoadingPageResult> { HomeResult.LoadingPageResult.Success(true) }
+            .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
+            .toObservable()
+            .subscribe(receivedEventsLoadingEventSubject)
+    }
 
     private val scrollStateChangeTransformer =
         ObservableTransformer<HomeAction.ScrollStateChangedAction, HomeResult> { action ->
@@ -39,86 +70,20 @@ class HomeActionProcessorHolder(
                 .map(HomeResult::FloatActionButtonVisibleResult)
         }
 
-    private val receivedEventDataSource: IntPageKeyedDataSource<ReceivedEvent>
-        get() = IntPageKeyedDataSource(
-            loadInitial = {
-                repository
-                    .queryReceivedEvents(UserManager.INSTANCE.login, pageIndex = 1, perPage = 15)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .onErrorReturn { Errors.ErrorWrapper(it).left() }
-                    .doOnSubscribe {
-                        receivedEventsLoadingEventSubject.onNext(
-                            HomeResult.LoadingPageResult.InFlight(true)
-                        )
-                    }
-                    .flatMap { either ->
-                        either.fold({
-                            receivedEventsLoadingEventSubject.onNext(
-                                HomeResult.LoadingPageResult.Failure(true, it)
-                            )
-                            Flowable.empty<IntPageKeyedData<ReceivedEvent>>()
-                        }, { datas ->
-                            receivedEventsLoadingEventSubject.onNext(
-                                HomeResult.LoadingPageResult.Success(true)
-                            )
-                            Flowable.just(
-                                IntPageKeyedData.build(
-                                    data = datas,
-                                    pageIndex = 1,
-                                    hasAdjacentPageKey = datas.isNotEmpty()
-                                )
-                            )
-                        })
-                    }
-            },
-            loadAfter = { param ->
-                repository
-                    .queryReceivedEvents(UserManager.INSTANCE.login, param.key, perPage = 15)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .onErrorReturn { Errors.ErrorWrapper(it).left() }
-                    .doOnSubscribe {
-                        receivedEventsLoadingEventSubject.onNext(
-                            HomeResult.LoadingPageResult.InFlight(false)
-                        )
-                    }
-                    .flatMap { either ->
-                        either.fold({
-                            receivedEventsLoadingEventSubject.onNext(
-                                HomeResult.LoadingPageResult.Failure(false, it)
-                            )
-                            Flowable.empty<IntPageKeyedData<ReceivedEvent>>()
-                        }, { datas ->
-                            receivedEventsLoadingEventSubject.onNext(
-                                HomeResult.LoadingPageResult.Success(false)
-                            )
-                            Flowable.just(
-                                IntPageKeyedData.build(
-                                    data = datas,
-                                    pageIndex = param.key,
-                                    hasAdjacentPageKey = datas.isNotEmpty()
-                                )
-                            )
-                        })
-                    }
-            }
-        )
-
     val actionProcessor: ObservableTransformer<HomeAction, HomeResult> =
         ObservableTransformer { actions ->
             actions.publish { shared ->
                 Observable.mergeArray(
                     shared.ofType(HomeAction.InitialAction::class.java).compose<HomeResult>(initialActionTransformer),
+                    shared.ofType(HomeAction.SwipeRefreshAction::class.java).compose(swipeRefreshActionTransformer),
                     shared.ofType(HomeAction.ScrollToTopAction::class.java).map { HomeResult.ScrollToTopResult },
                     shared.ofType(HomeAction.ScrollStateChangedAction::class.java).compose(scrollStateChangeTransformer),
-                    receivedEventsLoadingEventSubject,
                     shared.filter { o ->
                         o !is HomeAction.InitialAction
                                 && o !is HomeAction.ScrollToTopAction
                                 && o !is HomeAction.ScrollStateChangedAction
                     }.flatMapErrorActionObservable()
-                )
+                ).mergeWith(receivedEventsLoadingEventSubject.hide())
             }
         }
 }
