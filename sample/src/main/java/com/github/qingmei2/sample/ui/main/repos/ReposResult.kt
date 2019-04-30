@@ -5,7 +5,11 @@ import com.github.qingmei2.sample.entity.Repo
 
 sealed class ReposResult {
 
-    data class QueryReposResult(val pagedList: PagedList<Repo>) : ReposResult()
+    data class InitialResult(val pagedList: PagedList<Repo>) : ReposResult()
+
+    object SwipeRefreshResult : ReposResult()
+
+    object SortTypeChangedResult : ReposResult()
 
     data class FloatActionButtonVisibleResult(val visible: Boolean) : ReposResult()
 

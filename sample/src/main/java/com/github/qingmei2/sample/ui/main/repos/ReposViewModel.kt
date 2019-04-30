@@ -7,6 +7,7 @@ import com.github.qingmei2.mvi.ext.reactivex.notOfType
 import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
@@ -62,7 +63,8 @@ class ReposViewModel(
             .compose(sortOptionEventFilter)
             .map(this::actionFromIntent)
             .compose(actionProcessorHolder.actionProcessor)
-            .scan(ReposViewState.idle(), ReposViewModel.reducer)
+            .scan(ReposViewState.idle(), reducer)
+            .switchMap(specialEventProcessor)
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)
@@ -74,13 +76,26 @@ class ReposViewModel(
 
     private fun actionFromIntent(intent: ReposIntent): ReposAction {
         return when (intent) {
-            is ReposIntent.InitialIntent,
-            is ReposIntent.RefreshIntent,
-            is ReposIntent.SortTypeChangeIntent -> ReposAction.QueryReposAction(currentSortOptions().blockingLast())
-            is ReposIntent.ScrollToTopIntent -> ReposAction.ScrollToTopAction
-            is ReposIntent.ScrollStateChangedIntent -> ReposAction.ScrollStateChangedAction(intent.type)
+            is ReposIntent.InitialIntent ->
+                ReposAction.InitialAction
+            is ReposIntent.RefreshIntent ->
+                ReposAction.SwipeRefreshAction
+            is ReposIntent.SortTypeChangeIntent ->
+                ReposAction.SortTypeChangedAction(intent.sort)
+            is ReposIntent.ScrollToTopIntent ->
+                ReposAction.ScrollToTopAction
+            is ReposIntent.ScrollStateChangedIntent ->
+                ReposAction.ScrollStateChangedAction(intent.type)
         }
     }
+
+    private val specialEventProcessor: io.reactivex.functions.Function<ReposViewState, ObservableSource<ReposViewState>>
+        get() = io.reactivex.functions.Function { state ->
+            when (state.uiEvent == null) {
+                true -> Observable.just(state)
+                false -> Observable.just(state, state.copy(uiEvent = null))
+            }
+        }
 
     companion object {
 
@@ -92,10 +107,19 @@ class ReposViewModel(
 
         private val reducer = BiFunction { previousState: ReposViewState, result: ReposResult ->
             when (result) {
-                is ReposResult.QueryReposResult -> {
+                is ReposResult.InitialResult -> {
                     previousState.copy(
                         error = null,
+                        isRefreshing = false,
                         uiEvent = ReposUIEvent.InitialSuccess(result.pagedList)
+                    )
+                }
+                is ReposResult.SwipeRefreshResult,
+                is ReposResult.SortTypeChangedResult -> {
+                    previousState.copy(
+                        error = null,
+                        isRefreshing = false,
+                        uiEvent = null
                     )
                 }
                 is ReposResult.ReposPageResult -> when (result) {
@@ -111,7 +135,7 @@ class ReposViewModel(
                         error = null,
                         uiEvent = ReposUIEvent.FloatActionButtonEvent(result.visible)
                     )
-                ReposResult.ScrollToTopResult ->
+                is ReposResult.ScrollToTopResult ->
                     previousState.copy(
                         error = null,
                         uiEvent = ReposUIEvent.ScrollToTopEvent

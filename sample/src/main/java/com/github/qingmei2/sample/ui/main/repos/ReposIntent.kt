@@ -6,11 +6,11 @@ sealed class ReposIntent : IIntent {
 
     object InitialIntent : ReposIntent()
 
-    object ScrollToTopIntent : ReposIntent()
-
     object RefreshIntent : ReposIntent()
 
     data class SortTypeChangeIntent(val sort: String) : ReposIntent()
+
+    object ScrollToTopIntent : ReposIntent()
 
     data class ScrollStateChangedIntent(val type: Int) : ReposIntent()
 }

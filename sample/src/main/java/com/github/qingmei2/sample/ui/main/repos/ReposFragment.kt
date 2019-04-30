@@ -53,11 +53,6 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
     }
 
     private fun binds() {
-        mViewModel.states()
-            .observeOn(mSchedulerProvider.ui())
-            .autoDisposable(scopeProvider)
-            .subscribe(this::render)
-
         mFabButton.throttleFirstClicks()
             .map { ReposIntent.ScrollToTopIntent }
             .autoDisposable(scopeProvider)
@@ -83,6 +78,11 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
             .map(ReposIntent::SortTypeChangeIntent)
             .autoDisposable(scopeProvider)
             .subscribe(mSortTypePublishSubject)
+
+        mViewModel.states()
+            .observeOn(mSchedulerProvider.ui())
+            .autoDisposable(scopeProvider)
+            .subscribe(this::render)
 
         mViewModel.processIntents(intents())
     }
@@ -132,19 +132,28 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
     }
 
     private fun initPagedListAdapter(pageList: PagedList<Repo>) {
-        val mAdapter = ReposPagedListAdapter(this)
-        mRecyclerView.adapter = mAdapter
-        mAdapter.submitList(pageList)
-        mAdapter.observeEvent()
-            .doOnNext { event ->
-                when (event) {
-                    is RepoPagedListItemEvent.ClickEvent -> {
-                        context?.jumpBrowser(event.url)
+        val mAdapter = mRecyclerView.adapter as ReposPagedListAdapter?
+        when (mAdapter == null) {
+            true -> {
+                val adapter = ReposPagedListAdapter(this)
+                adapter.observeEvent()
+                    .doOnNext { event ->
+                        when (event) {
+                            is RepoPagedListItemEvent.ClickEvent -> {
+                                context?.jumpBrowser(event.url)
+                            }
+                        }
                     }
-                }
+                    .autoDisposable(scopeProvider)
+                    .subscribe()
+
+                mRecyclerView.adapter = adapter
+                adapter.submitList(pageList)
             }
-            .autoDisposable(scopeProvider)
-            .subscribe()
+            false -> {
+                mAdapter.submitList(pageList)
+            }
+        }
     }
 
     private fun switchFabState(show: Boolean) =

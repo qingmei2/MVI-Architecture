@@ -41,7 +41,7 @@ class LoginViewModel(
             .map(this::actionFromIntent)
             .compose(processorHolder.actionProcessor)
             .scan(LoginViewState.idle(), reducer)
-            .flatMap(specialEventProcessor)
+            .switchMap(specialEventProcessor)
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)

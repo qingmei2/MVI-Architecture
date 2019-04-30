@@ -19,12 +19,16 @@ val reposKodeinModule = Kodein.Module("reposKodeinModule") {
     bind<ReposActionProcessorHolder>() with singleton {
         ReposActionProcessorHolder(
             repository = instance(),
+            userRepository = instance(),
             schedulerProvider = instance()
         )
     }
 
     bind<LocalReposDataSource>() with singleton {
-        LocalReposDataSource()
+        LocalReposDataSource(
+            db = instance(),
+            schedulers = instance()
+        )
     }
 
     bind<RemoteReposDataSource>() with singleton {
@@ -34,8 +38,8 @@ val reposKodeinModule = Kodein.Module("reposKodeinModule") {
         )
     }
 
-    bind<ReposDataSource>() with singleton {
-        ReposDataSource(
+    bind<ReposRepository>() with singleton {
+        ReposRepository(
             remote = instance(),
             local = instance()
         )
