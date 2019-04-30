@@ -1,18 +1,24 @@
 # MVI-Rhine
 
-#### English Documentation | [中文文档](https://github.com/qingmei2/MVI-Rhine/blob/master/README_ZH.md)
+#### [English Documentation](https://github.com/qingmei2/MVI-Rhine/blob/master/README_EN.md) | 中文文档
 
-## Summary
+## 通知
 
-**The MVI architecture using RxJava2 and Android Jetpack.**
+* 如果编译遇到如下图的错误，请先参考下方[【开始使用】](https://github.com/qingmei2/MVI-Rhine/blob/master/README.md#usage)，对项目进行配置：
 
-> This repo is based on an Android ported version of the **Model-View-Intent architecture** and uses RxJava2 to implement the reactive caracteristic of the architecture.
+![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/compile_error.png)
 
-> The **MVI** architecture embraces reactive and functional programming. The two main components of this architecture, the View and the ViewModel can be seen as functions, taking an input and emiting outputs to each other. The View takes input from the ViewModel and emit back intents. The ViewModel takes input from the View and emit back view states. This means the View has only one entry point to forward data to the ViewModel and vice-versa, the ViewModel only has one way to pass information to the View.
+> 出现这个问题的原因，最新版本的代码，需要开发者注册一个自己的`OAuth Application`，注册后，`Github`的API访问次数就能达到5000次/小时（之前的版本只有60次/小时），之前很多朋友反应在Debug过程中不够用，断点打了几次就被限制请求了，因此最新版本添加了这个配置的步骤，虽然麻烦了一小步，但是对于学习效率的提升，这点配置时间可以忽略不计。
+
+## 概述
+
+这个 **Github客户端** 的Android项目是基于 **MVI** (Model-View-Intent) 模式进行开发的，项目整体 **业务逻辑** 和 **UI的交互逻辑** 全部交由 **RxJava2** 进行串联。
+
+**MVI** 架构旨在使用  **响应式** 和 **函数式编程** （Reactive && Functional Programming）， 这个架构的两个主要组件，`View`和`ViewModel`可以看作是函数，两者间通过`RxJava`相互输入和输出：
 
 ![](https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/mvi_detail.png)
 
-## ScreenShots
+## 屏幕截图
 
 <div align:left;display:inline;>
 <img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/login.png"/>
@@ -21,9 +27,10 @@
 <img width="200" height="360" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/me.png"/>
 </div>
 
-## Libraries
 
-### Android Jetpack
+## 三方组件
+
+### Android 官方架构组件 Jetpack
 
 * [Lifecycle: Create a UI that automatically responds to lifecycle events.](https://developer.android.com/topic/libraries/architecture/lifecycle)
 
@@ -35,17 +42,17 @@
 
 * [Paging: Makes it easier for you to load data gradually and gracefully within your app's RecyclerView.](https://developer.android.com/topic/libraries/architecture/paging/)
 
-### Http
+### 网络请求
 
 * [Retrofit2: Type-safe HTTP client for Android and Java by Square, Inc.](https://github.com/square/retrofit)
 
 * [OkHttp: An HTTP+HTTP/2 client for Android and Java applications.](https://github.com/square/okhttp)
 
-### DI
+### 依赖注入
 
 * [Kodein-DI: Painless Kotlin Dependency Injection](https://github.com/Kodein-Framework/Kodein-DI)
 
-### ReactiveX
+### 响应式库
 
 * [RxKotlin: RxJava bindings for Kotlin](https://github.com/ReactiveX/RxKotlin)
 
@@ -57,38 +64,88 @@
 
 * [AutoDispose: Automatic binding+disposal of RxJava 2 streams.](https://github.com/uber/AutoDispose)
 
-### Functional
+### 函数式库
 
 * [Arrow: Functional companion to Kotlin's Standard Library.](https://arrow-kt.io/)
 
-### Others
+### 其它
 
 * [Glide: An image loading and caching library for Android focused on smooth scrolling](https://github.com/bumptech/glide)
 
 * [Timber: A logger with a small, extensible API which provides utility on top of Android's normal Log class.](https://github.com/JakeWharton/timber)
 
-## How to study MVI
 
-> * [Part 1: Model
-](http://hannesdorfmann.com/android/mosby3-mvi-1)
-> * [Part 2: View and Intent](http://hannesdorfmann.com/android/mosby3-mvi-2)
-> * [Part 3: State Reducer](http://hannesdorfmann.com/android/mosby3-mvi-3)
-> * [Part 4: Independent UI Components
-](http://hannesdorfmann.com/android/mosby3-mvi-4)
-> * [Part 5: Debugging with ease
-](http://hannesdorfmann.com/android/mosby3-mvi-5)
-> * [Part 6: Restoring State
-](http://hannesdorfmann.com/android/mosby3-mvi-6)
-> * [Part 7: Timing (SingleLiveEvent problem)
-](http://hannesdorfmann.com/android/mosby3-mvi-7)
-> * [Part 8: In-App Navigation
-](http://hannesdorfmann.com/android/mosby3-mvi-8)
+<a id="usage"></a>
 
-## Thanks to
+## 开始使用
 
-:art: The UI design of this project refers to [gitme](https://github.com/flutterchina/gitme).
+* 1.直接通过git命令行进行clone:
 
-:star: This repo is inspired by [oldergod/android-architecture](https://github.com/oldergod/android-architecture) and uses some of its source code.
+```shell
+$ git clone https://github.com/qingmei2/MVI-Rhine.git
+```
+
+* 2.注册你的GithubApp
+
+首先打开[这个链接](https://github.com/settings/applications/new),注册属于你的`OAuth Application`：
+
+<div align:left;display:inline;>
+<img width="480" height="480" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/regist_step1.png"/>
+</div>
+
+注册完成后，记住下面的`Client ID`和`Client Secret`,并配置到你的项目根目录的`local.properties`文件中：
+
+<div align:left;display:inline;>
+<img width="550" height="384" src="https://github.com/qingmei2/MVI-Rhine/blob/master/screenshots/regist_step2.png"/>
+</div>
+
+```groovy
+CLIENT_ID = "xxxxxx"
+CLIENT_SECRET = "xxxxxx"
+```
+
+大功告成，接下来点击编译并运行即可。:tada: :tada: :tada:
+
+## 如何入手学习这个项目？
+
+如何使用`Android Jetpack`？
+
+>* [Android官方架构组件Lifecycle：生命周期组件详解&原理分析](https://juejin.im/post/5c53beaf51882562e27e5ad9)
+>* [Android官方架构组件ViewModel:从前世今生到追本溯源](https://juejin.im/post/5c047fd3e51d45666017ff86)
+>* [Android官方架构组件Paging：分页库的设计美学](https://juejin.im/post/5c53ad9e6fb9a049eb3c5cfd)
+>* [Android官方架构组件Navigation：大巧不工的Fragment管理框架](https://juejin.im/post/5c53be3951882562d27416c6)
+
+如何使用`Kodein`进行依赖注入？
+
+> * [ 告别Dagger2，在Kotlin项目中使用Kodein进行依赖注入 ](https://www.jianshu.com/p/b0da805f7534)
+> * [【译】Android开发从Dagger2迁移至Kodein的感受  ](https://www.jianshu.com/p/e5eef49570b9)
+
+如何进阶学习`RxJava`？
+
+> * [ 理解RxJava（一）：基本流程源码分析 ](https://www.jianshu.com/p/7fce2955f2db)
+> * [ 理解RxJava（二）：操作符流程原理分析 ](https://www.jianshu.com/p/0a28428e734d)
+> * [ 理解RxJava（三）：线程调度原理分析 ](https://www.jianshu.com/p/9e3930fbcb26)
+> * [ 理解RxJava（四）Subject用法及原理分析 ](https://www.jianshu.com/p/d7efc29ec9d3)
+
+> * [ 解决RxJava内存泄漏（前篇）：RxLifecycle详解及原理分析 ](https://www.jianshu.com/p/8311410de676)
+> * [ 解决RxJava内存泄漏（后篇）：Android架构中添加AutoDispose解决RxJava内存泄漏 ](https://www.jianshu.com/p/8490d9383ba5)
+
+如何理解 **MVI** 与 **状态管理** ：
+
+> * [[译]使用MVI打造响应式APP(一):Model层到底代表什么](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E4%B8%80%5D%3AModel%E5%B1%82%E5%88%B0%E5%BA%95%E4%BB%A3%E8%A1%A8%E4%BB%80%E4%B9%88.md)
+> * [[译]使用MVI打造响应式APP[二]:View层和Intent层](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E4%BA%8C%5D%3AView%E5%B1%82%E5%92%8CIntent%E5%B1%82.md)
+> * [[译]使用MVI打造响应式APP[三]:StateReducer](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E4%B8%89%5D%3AStateReducer.md)
+> * [[译]使用MVI打造响应式APP[四]:IndependentUIComponents](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E5%9B%9B%5D%3AIndependentUIComponents.md)
+> * [[译]使用MVI打造响应式APP[五]:DebuggingWithEase](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E4%BA%94%5D%3ADebuggingWithEase.md)
+> * [[译]使用MVI打造响应式APP[六]:RestoringState](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E5%85%AD%5D%3ARestoringState.md)
+> * [[译]使用MVI打造响应式APP[七]:Timing,SingleLiveEventProblem](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E4%B8%83%5D%3ATiming%2CSingleLiveEventProblem.md)
+> * [[译]使用MVI打造响应式APP[八]:Navigation](https://github.com/qingmei2/android-programming-profile/blob/master/src/Android-MVI/%5B%E8%AF%91%5D%E4%BD%BF%E7%94%A8MVI%E6%89%93%E9%80%A0%E5%93%8D%E5%BA%94%E5%BC%8FAPP%5B%E5%85%AB%5D%3ANavigation.md)
+
+## 感谢
+
+:art: 项目中的UI设计部分参考了 [gitme](https://github.com/flutterchina/gitme) .
+
+:star: 感谢 [oldergod/android-architecture](https://github.com/oldergod/android-architecture) 项目对本项目的指导性作用.
 
 ## License
 
