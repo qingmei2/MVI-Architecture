@@ -1,6 +1,5 @@
 package com.github.qingmei2.sample.ui.main.home
 
-import android.annotation.SuppressLint
 import androidx.paging.PagedList
 import com.github.qingmei2.mvi.base.repository.BaseRepositoryBoth
 import com.github.qingmei2.mvi.base.repository.ILocalDataSource
@@ -33,19 +32,11 @@ class HomeRepository(
         pageIndex: Int,
         perPage: Int = 15
     ): Flowable<List<ReceivedEvent>> {
-        return when (pageIndex == 0) {
-            true -> remoteDataSource.fetchEventsByPage(username, pageIndex, perPage)
-                .flatMap {
-                    localDataSource.clearOldData()
-                    localDataSource.insertNewPagedEventData(it)
-                        .andThen(Flowable.just(it))
-                }
-            false -> remoteDataSource.fetchEventsByPage(username, pageIndex, perPage)
-                .flatMap {
-                    localDataSource.insertNewPagedEventData(it)
-                        .andThen(Flowable.just(it))
-                }
-        }
+        return remoteDataSource.fetchEventsByPage(username, pageIndex, perPage)
+            .flatMap {
+                localDataSource.insertNewPagedEventData(it)
+                    .andThen(Flowable.just(it))
+            }
     }
 }
 

@@ -7,6 +7,7 @@ import com.github.qingmei2.mvi.ext.reactivex.notOfType
 import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
@@ -34,25 +35,13 @@ class LoginViewModel(
             }
         }
 
-    private val processViewResultAfter: (LoginViewState) -> Observable<LoginViewState>
-        get() = { viewState ->
-            when (viewState.uiEvents) {
-                is LoginViewState.LoginUiEvents.JumpMain -> {
-                    Observable
-                        .just(viewState.copy(uiEvents = null))
-                        .startWith(viewState)
-                }
-                else -> Observable.just(viewState)
-            }
-        }
-
     private fun compose(): Observable<LoginViewState> {
         return intentsSubject
             .compose(intentFilter)
             .map(this::actionFromIntent)
             .compose(processorHolder.actionProcessor)
             .scan(LoginViewState.idle(), reducer)
-            .flatMap(processViewResultAfter)
+            .flatMap(specialEventProcessor)
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)
@@ -64,6 +53,14 @@ class LoginViewModel(
             is LoginIntent.LoginClicksIntent -> LoginAction.ClickLoginAction(intent.username, intent.password)
         }
     }
+
+    private val specialEventProcessor: io.reactivex.functions.Function<LoginViewState, ObservableSource<LoginViewState>>
+        get() = io.reactivex.functions.Function { state ->
+            when (state.uiEvents == null) {
+                true -> Observable.just(state)
+                false -> Observable.just(state, state.copy(uiEvents = null))
+            }
+        }
 
     companion object {
 

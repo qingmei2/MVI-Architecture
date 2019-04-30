@@ -60,7 +60,7 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
         when (state.uiEvents) {
             is LoginViewState.LoginUiEvents.JumpMain -> {
                 MainActivity.launch(this)
-                // finish()
+//                 finish()
                 return
             }
             is LoginViewState.LoginUiEvents.TryAutoLogin -> {
