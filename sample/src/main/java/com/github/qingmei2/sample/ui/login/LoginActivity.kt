@@ -1,5 +1,6 @@
 package com.github.qingmei2.sample.ui.login
 
+import android.os.Bundle
 import android.view.View
 import com.github.qingmei2.mvi.base.view.activity.BaseActivity
 import com.github.qingmei2.sample.R
@@ -28,9 +29,8 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
 
     private val mViewModel: LoginViewModel by instance()
 
-    override fun onStart() {
-        super.onStart()
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         bind()
     }
 
