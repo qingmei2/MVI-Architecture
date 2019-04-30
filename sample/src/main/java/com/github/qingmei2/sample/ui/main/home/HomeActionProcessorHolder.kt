@@ -49,7 +49,7 @@ class HomeActionProcessorHolder(
             .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
             .startWith(HomeResult.LoadingPageResult.InFlight(true))
             .toObservable()
-            .subscribe(receivedEventsLoadingEventSubject)
+            .subscribe { receivedEventsLoadingEventSubject.onNext(it) }
     }
 
     private fun onItemAtEndLoaded(itemAtEnd: ReceivedEvent) {
@@ -59,7 +59,7 @@ class HomeActionProcessorHolder(
             .map<HomeResult.LoadingPageResult> { HomeResult.LoadingPageResult.Success(true) }
             .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
             .toObservable()
-            .subscribe(receivedEventsLoadingEventSubject)
+            .subscribe { receivedEventsLoadingEventSubject.onNext(it) }
     }
 
     private val scrollStateChangeTransformer =
