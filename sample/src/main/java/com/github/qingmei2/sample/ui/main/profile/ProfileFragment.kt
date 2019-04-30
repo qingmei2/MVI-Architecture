@@ -65,8 +65,7 @@ class ProfileFragment : BaseFragment<ProfileIntent, ProfileViewState>() {
             }
         }
 
-        val event = state.uiEvent
-        when (event) {
+        when (val event = state.uiEvent) {
             is ProfileUIEvent.InitialSuccess -> {
                 onInitialResult(event.user)
             }
