@@ -1,5 +1,6 @@
 package com.github.qingmei2.sample.ui.main.home
 
+import androidx.annotation.WorkerThread
 import androidx.paging.PagedList
 import com.github.qingmei2.mvi.base.repository.BaseRepositoryBoth
 import com.github.qingmei2.mvi.base.repository.ILocalDataSource
@@ -17,6 +18,7 @@ class HomeRepository(
     localDataSource: HomeLocalDataSource
 ) : BaseRepositoryBoth<HomeRemoteDataSource, HomeLocalDataSource>(remoteDataSource, localDataSource) {
 
+    @WorkerThread
     fun swipeRefresh() {
         localDataSource.clearOldData()
     }
@@ -80,6 +82,7 @@ class HomeLocalDataSource(
             )
     }
 
+    @WorkerThread
     fun clearOldData() {
         db.runInTransaction {
             db.userReceivedEventDao().clearReceivedEvents()

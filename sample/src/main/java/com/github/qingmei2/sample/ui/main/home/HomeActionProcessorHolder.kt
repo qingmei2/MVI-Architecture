@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.paging.PagedList
 import com.github.qingmei2.mvi.ext.reactivex.flatMapErrorActionObservable
 import com.github.qingmei2.sample.entity.ReceivedEvent
+import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
 import com.github.qingmei2.sample.repository.UserInfoRepository
 import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
 import io.reactivex.Observable
@@ -13,7 +14,8 @@ import io.reactivex.subjects.PublishSubject
 @SuppressLint("CheckResult")
 class HomeActionProcessorHolder(
     private val repository: HomeRepository,
-    private val userRepository: UserInfoRepository
+    private val userRepository: UserInfoRepository,
+    private val schedulerProvider: SchedulerProvider
 ) {
     private val receivedEventsLoadingEventSubject: PublishSubject<HomeResult.LoadingPageResult> =
         PublishSubject.create()
@@ -37,10 +39,13 @@ class HomeActionProcessorHolder(
 
     private val swipeRefreshActionTransformer =
         ObservableTransformer<HomeAction.SwipeRefreshAction, HomeResult.SwipeRefreshResult> { action ->
-            action.flatMap {
-                repository.swipeRefresh()
-                Observable.just(HomeResult.SwipeRefreshResult)
-            }
+            action
+                .observeOn(schedulerProvider.io())
+                .map {
+                    repository.swipeRefresh()
+                    HomeResult.SwipeRefreshResult
+                }
+                .observeOn(schedulerProvider.ui())
         }
 
     private fun onZeroItemsLoaded() {
@@ -82,6 +87,7 @@ class HomeActionProcessorHolder(
                         o !is HomeAction.InitialAction
                                 && o !is HomeAction.ScrollToTopAction
                                 && o !is HomeAction.ScrollStateChangedAction
+                                && o !is HomeAction.SwipeRefreshAction
                     }.flatMapErrorActionObservable()
                 ).mergeWith(receivedEventsLoadingEventSubject.hide())
             }

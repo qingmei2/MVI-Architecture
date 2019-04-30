@@ -40,7 +40,8 @@ val homeKodeinModule = Kodein.Module("homeKodeinModule") {
     bind<HomeActionProcessorHolder>() with scoped<Fragment>(AndroidLifecycleScope).singleton {
         HomeActionProcessorHolder(
             repository = instance(),
-            userRepository = instance()
+            userRepository = instance(),
+            schedulerProvider = instance()
         )
     }
 }

@@ -32,7 +32,7 @@ class HomeViewModel(
     private fun actionFromIntent(intent: HomeIntent): HomeAction {
         return when (intent) {
             is HomeIntent.InitialIntent -> HomeAction.InitialAction
-            is HomeIntent.RefreshIntent -> HomeAction.InitialAction
+            is HomeIntent.RefreshIntent -> HomeAction.SwipeRefreshAction
             is HomeIntent.ScrollToTopIntent -> HomeAction.ScrollToTopAction
             is HomeIntent.ScrollStateChangedIntent -> HomeAction.ScrollStateChangedAction(intent.state)
         }
