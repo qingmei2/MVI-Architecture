@@ -1,11 +1,15 @@
 package com.github.qingmei2.sample.ui.main.repos
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import com.github.qingmei2.mvi.base.view.adapter.AutoDisposePagedListAdapter
@@ -15,6 +19,7 @@ import com.github.qingmei2.sample.R
 import com.github.qingmei2.sample.entity.Repo
 import com.jakewharton.rxbinding3.view.clicks
 import com.uber.autodispose.autoDisposable
+import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
@@ -55,7 +60,7 @@ class ReposPagedListViewHolder(rootView: View) : AutoDisposeViewHolder(rootView)
     private val mTvOwnerName: TextView = rootView.findViewById(R.id.tvOwnerName)
     private val mTvRepoName: TextView = rootView.findViewById(R.id.tvRepoName)
     private val mTvLanguage: TextView = rootView.findViewById(R.id.tvLanguage)
-    private val mIvLanguageColor: ImageView = rootView.findViewById(R.id.ivLanguageColor)
+    private val mIvLanguageColor: CircleImageView = rootView.findViewById(R.id.ivLanguageColor)
     private val mTvRepoDesc: TextView = rootView.findViewById(R.id.tvRepoDesc)
     private val mTvStar: TextView = rootView.findViewById(R.id.tvStar)
     private val mTvIssue: TextView = rootView.findViewById(R.id.tvIssue)
@@ -80,8 +85,26 @@ class ReposPagedListViewHolder(rootView: View) : AutoDisposeViewHolder(rootView)
 
         mTvOwnerName.text = data.owner.login
         mIvLanguageColor.visibility = if (data.language == null) View.GONE else View.VISIBLE
-        mIvLanguageColor.setBackgroundResource(
-            when (data.language) {
+        mIvLanguageColor.setImageDrawable(getLanguageColor(data.language))
+
+        mTvLanguage.text = data.language ?: ""
+
+        mTvRepoName.text = data.fullName
+        mTvRepoDesc.text = data.description ?: "(No description, website, or topics provided.)"
+        mTvStar.text = data.stargazersCount.toString()
+        mTvIssue.text = data.openIssuesCount.toString()
+        mTvFork.text = data.forksCount.toString()
+    }
+
+    private fun getLanguageColor(language: String?): Drawable {
+        if (language == null) return ColorDrawable(Color.TRANSPARENT)
+
+        val colorProvider: (Int) -> Drawable = { resId ->
+            ColorDrawable(ContextCompat.getColor(mIvLanguageColor.context, resId))
+        }
+
+        return colorProvider(
+            when (language) {
                 "Kotlin" -> R.color.color_language_kotlin
                 "Java" -> R.color.color_language_java
                 "JavaScript" -> R.color.color_language_js
@@ -92,17 +115,9 @@ class ReposPagedListViewHolder(rootView: View) : AutoDisposeViewHolder(rootView)
                 "C++" -> R.color.color_language_cplus
                 "C" -> R.color.color_language_c
                 "ruby" -> R.color.color_language_ruby
-                null -> android.R.color.transparent
                 else -> R.color.color_language_other
             }
         )
-        mTvLanguage.text = data.language ?: ""
-
-        mTvRepoName.text = data.fullName
-        mTvRepoDesc.text = data.description ?: "(No description, website, or topics provided.)"
-        mTvStar.text = data.stargazersCount.toString()
-        mTvIssue.text = data.openIssuesCount.toString()
-        mTvFork.text = data.forksCount.toString()
     }
 
     companion object {
