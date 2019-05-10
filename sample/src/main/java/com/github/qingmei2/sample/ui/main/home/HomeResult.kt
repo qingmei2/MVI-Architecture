@@ -1,9 +1,10 @@
 package com.github.qingmei2.sample.ui.main.home
 
 import androidx.paging.PagedList
+import com.github.qingmei2.mvi.base.result.IResult
 import com.github.qingmei2.sample.entity.ReceivedEvent
 
-sealed class HomeResult {
+sealed class HomeResult : IResult {
 
     data class InitialResult(val pagedList: PagedList<ReceivedEvent>) : HomeResult()
 

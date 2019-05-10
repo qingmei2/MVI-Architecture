@@ -5,7 +5,6 @@ import androidx.paging.PagedList
 import com.github.qingmei2.mvi.base.view.fragment.BaseFragment
 import com.github.qingmei2.mvi.ext.reactivex.throttleFirstClicks
 import com.github.qingmei2.sample.R
-import com.github.qingmei2.sample.base.BaseApplication
 import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.ReceivedEvent
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
