@@ -1,10 +1,8 @@
 package com.github.qingmei2.sample.ui.login
 
-import arrow.core.Either
 import com.github.qingmei2.mvi.base.repository.BaseRepositoryBoth
 import com.github.qingmei2.mvi.base.repository.ILocalDataSource
 import com.github.qingmei2.mvi.base.repository.IRemoteDataSource
-import com.github.qingmei2.sample.entity.Errors
 import com.github.qingmei2.sample.entity.UserInfo
 import com.github.qingmei2.sample.entity.event.AutoLoginEvent
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
@@ -20,19 +18,11 @@ class LoginDataSourceRepository(
     localDataSource: LoginLocalDataSource
 ) : BaseRepositoryBoth<LoginRemoteDataSource, LoginLocalDataSource>(remoteDataSource, localDataSource) {
 
-    fun login(username: String, password: String): Flowable<Either<Errors, UserInfo>> {
+    fun login(username: String, password: String): Flowable<UserInfo> {
         // 保存用户登录信息
         return localDataSource.savePrefsUser(username, password)
             .andThen(remoteDataSource.login())
-            .doOnNext { either ->
-                either.fold({
-                    // 如果登录失败，清除登录信息
-                    localDataSource.clearPrefsUser()
-                    Unit
-                }, {
-                    UserManager.INSTANCE = it
-                })
-            }
+            .doOnNext { info -> UserManager.INSTANCE = info }
             // 如果登录失败，清除登录信息
             .doOnError { localDataSource.clearPrefsUser() }
     }
@@ -47,7 +37,7 @@ class LoginRemoteDataSource(
     private val schedulers: SchedulerProvider
 ) : IRemoteDataSource {
 
-    fun login(): Flowable<Either<Errors, UserInfo>> {
+    fun login(): Flowable<UserInfo> {
         val authObservable = serviceManager.loginService
             .authorizations(LoginRequestModel.generate())
 
@@ -57,9 +47,6 @@ class LoginRemoteDataSource(
         return authObservable                       // 1.用户登录认证
             .flatMap { ownerInfoObservable }        // 2.获取用户详细信息
             .subscribeOn(schedulers.io())
-            .map {
-                Either.right(it)
-            }
     }
 }
 

@@ -57,10 +57,6 @@
 
 * [AutoDispose: Automatic binding+disposal of RxJava 2 streams.](https://github.com/uber/AutoDispose)
 
-### Functional
-
-* [Arrow: Functional companion to Kotlin's Standard Library.](https://arrow-kt.io/)
-
 ### Others
 
 * [Glide: An image loading and caching library for Android focused on smooth scrolling](https://github.com/bumptech/glide)

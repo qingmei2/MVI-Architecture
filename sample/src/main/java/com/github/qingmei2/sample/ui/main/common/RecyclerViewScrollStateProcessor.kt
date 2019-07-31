@@ -1,8 +1,6 @@
 package com.github.qingmei2.sample.ui.main.common
 
 import androidx.recyclerview.widget.RecyclerView
-import arrow.core.left
-import arrow.core.right
 import com.github.qingmei2.sample.entity.Errors
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -22,16 +20,16 @@ val scrollStateProcessor: ObservableTransformer<Int, Boolean>
                 upstream
                     .zipWith(upstream.startWith(true)) { last, current ->
                         when (last == current) {
-                            true -> Errors.EmptyInputError.left()
-                            false -> current.right()
+                            true -> Result.failure<Boolean>(Errors.EmptyInputError)
+                            false -> Result.success(current)
                         }
                     }
             }
             .flatMap { changed ->
                 changed.fold({
-                    Observable.empty<Boolean>()
-                }, {
                     Observable.just(it)
+                }, {
+                    Observable.empty<Boolean>()
                 })
             }
     }

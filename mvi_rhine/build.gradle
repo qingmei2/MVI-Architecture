@@ -92,9 +92,6 @@ dependencies {
     api libs.kodein_android
     api libs.kodein_androidx
 
-    // arrow
-    api libs.arrow
-
     // okhttp
     api libs.okhttp
     api libs.okhttp_logging

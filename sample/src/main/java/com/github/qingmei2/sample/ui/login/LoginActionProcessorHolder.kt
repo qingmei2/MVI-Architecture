@@ -43,9 +43,7 @@ class LoginActionProcessorHolder(
                     false -> repository
                         .login(username, password)
                         .toObservable()
-                        .flatMap { either ->
-                            either.fold(::onLoginFailureResult, ::onLoginSuccessResult)
-                        }
+                        .flatMap(::onLoginSuccessResult)
                         .onErrorReturn(LoginResult.ClickLoginResult::Failure)
                         .subscribeOn(schedulers.io())
                         .observeOn(schedulers.ui())
@@ -57,9 +55,6 @@ class LoginActionProcessorHolder(
     private fun onLoginParamEmptyResult(): Observable<LoginResult.ClickLoginResult> =
         Observable.just(Errors.SimpleMessageError("username or password can't be null!"))
             .map(LoginResult.ClickLoginResult::Failure)
-
-    private fun onLoginFailureResult(error: Errors): Observable<LoginResult.ClickLoginResult> =
-        Observable.just(LoginResult.ClickLoginResult.Failure(error))
 
     private fun onLoginSuccessResult(loginUser: UserInfo): Observable<LoginResult.ClickLoginResult> =
         Observable.just(LoginResult.ClickLoginResult.Success(loginUser))
