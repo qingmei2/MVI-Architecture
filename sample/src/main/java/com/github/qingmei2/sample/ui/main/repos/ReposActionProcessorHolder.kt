@@ -24,6 +24,9 @@ class ReposActionProcessorHolder(
     private val reposLoadingEventSubject: PublishSubject<ReposResult> =
         PublishSubject.create()
 
+    private val mViewModelClearEventSubject: PublishSubject<Unit> =
+        PublishSubject.create()
+
     private val initialActionTransformer =
         ObservableTransformer<ReposAction.InitialAction, ReposResult.InitialResult> { action ->
             action.flatMap<ReposResult.InitialResult> {
@@ -49,6 +52,7 @@ class ReposActionProcessorHolder(
             .map<ReposResult.ReposPageResult> { ReposResult.ReposPageResult.Success(true) }
             .onErrorReturn { ReposResult.ReposPageResult.Failure(true, it) }
             .startWith(ReposResult.ReposPageResult.InFlight(true))
+            .takeUntil(mViewModelClearEventSubject)
             .subscribe { reposLoadingEventSubject.onNext(it) }
     }
 
@@ -60,6 +64,7 @@ class ReposActionProcessorHolder(
             .toObservable()
             .map<ReposResult.ReposPageResult> { ReposResult.ReposPageResult.Success(true) }
             .onErrorReturn { ReposResult.ReposPageResult.Failure(true, it) }
+            .takeUntil(mViewModelClearEventSubject)
             .subscribe { reposLoadingEventSubject.onNext(it) }
     }
 
@@ -114,4 +119,15 @@ class ReposActionProcessorHolder(
                 )
             }
         }
+
+    fun onViewModelCleared() {
+        if (mViewModelClearEventSubject.hasComplete())
+            throw IllegalStateException("can't call onViewModelCleared() repeatedly.")
+
+        mViewModelClearEventSubject.onNext(Unit)
+        mViewModelClearEventSubject.onComplete()
+
+        repoSortTypeSubject.onComplete()
+        reposLoadingEventSubject.onComplete()
+    }
 }

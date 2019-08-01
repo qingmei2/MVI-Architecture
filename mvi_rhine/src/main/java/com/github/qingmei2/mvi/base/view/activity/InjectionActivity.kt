@@ -1,20 +1,23 @@
 package com.github.qingmei2.mvi.base.view.activity
 
-import androidx.appcompat.app.AppCompatActivity
-import org.kodein.di.Copy
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
-import org.kodein.di.android.retainedKodein
-import org.kodein.di.generic.kcontext
+import android.os.Bundle
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
+import javax.inject.Inject
 
-abstract class InjectionActivity : AutoDisposeActivity(), KodeinAware {
+abstract class InjectionActivity : AutoDisposeActivity(), HasAndroidInjector {
 
-    protected val parentKodein by closestKodein()
+    @Inject
+    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
-    override val kodeinContext = kcontext<AppCompatActivity>(this)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
+        super.onCreate(savedInstanceState)
+    }
 
-    override val kodein: Kodein by retainedKodein {
-        extend(parentKodein, copy = Copy.All)
+    override fun androidInjector(): AndroidInjector<Any> {
+        return androidInjector
     }
 }

@@ -12,22 +12,17 @@ import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_login.*
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
+import javax.inject.Inject
 
 class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
-
-    override val kodein: Kodein = Kodein.lazy {
-        extend(parentKodein)
-        import(loginKodeinModule)
-    }
 
     private val loginClicksIntentPublisher =
         PublishSubject.create<LoginIntent.LoginClicksIntent>()
 
     override val layoutId: Int = R.layout.activity_login
 
-    private val mViewModel: LoginViewModel by instance()
+    @Inject
+    lateinit var mViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +55,7 @@ class LoginActivity : BaseActivity<LoginIntent, LoginViewState>() {
         when (state.uiEvents) {
             is LoginViewState.LoginUiEvents.JumpMain -> {
                 MainActivity.launch(this)
-//                 finish()
+//                finish()
                 return
             }
             is LoginViewState.LoginUiEvents.TryAutoLogin -> {

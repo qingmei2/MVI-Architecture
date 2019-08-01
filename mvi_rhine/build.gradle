@@ -87,10 +87,10 @@ dependencies {
     api libs.autodispose_android_ktx
     api libs.autodispose_archs_ktx
 
-    // kodein
-    api libs.kodein
-    api libs.kodein_android
-    api libs.kodein_androidx
+    // dagger
+    api libs.dagger
+    api libs.dagger_android
+    api libs.dagger_android_support
 
     // okhttp
     api libs.okhttp

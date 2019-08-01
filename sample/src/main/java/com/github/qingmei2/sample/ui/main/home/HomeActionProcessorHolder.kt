@@ -19,9 +19,11 @@ class HomeActionProcessorHolder(
 ) {
     private val receivedEventsLoadingEventSubject: PublishSubject<HomeResult.LoadingPageResult> =
         PublishSubject.create()
+    private val mViewModelClearEventPublisher: PublishSubject<Int> =
+        PublishSubject.create()
 
-    private val initialActionTransformer =
-        ObservableTransformer<HomeAction.InitialAction, HomeResult.InitialResult> { action ->
+    private val initialActionTransformer
+        get() = ObservableTransformer<HomeAction.InitialAction, HomeResult.InitialResult> { action ->
             action.flatMap<HomeResult.InitialResult> {
                 repository.getReceivedPagedList(
                     boundaryCallback = object : PagedList.BoundaryCallback<ReceivedEvent>() {
@@ -37,8 +39,8 @@ class HomeActionProcessorHolder(
             }
         }
 
-    private val swipeRefreshActionTransformer =
-        ObservableTransformer<HomeAction.SwipeRefreshAction, HomeResult.SwipeRefreshResult> { action ->
+    private val swipeRefreshActionTransformer
+        get() = ObservableTransformer<HomeAction.SwipeRefreshAction, HomeResult.SwipeRefreshResult> { action ->
             action
                 .observeOn(schedulerProvider.io())
                 .map {
@@ -54,6 +56,7 @@ class HomeActionProcessorHolder(
             .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
             .startWith(HomeResult.LoadingPageResult.InFlight(true))
             .toObservable()
+            .takeUntil(mViewModelClearEventPublisher)   // auto dispose when ViewModel.onClear()
             .subscribe { receivedEventsLoadingEventSubject.onNext(it) }
     }
 
@@ -64,19 +67,20 @@ class HomeActionProcessorHolder(
             .map<HomeResult.LoadingPageResult> { HomeResult.LoadingPageResult.Success(true) }
             .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
             .toObservable()
+            .takeUntil(mViewModelClearEventPublisher)   // auto dispose when ViewModel.onClear()
             .subscribe { receivedEventsLoadingEventSubject.onNext(it) }
     }
 
-    private val scrollStateChangeTransformer =
-        ObservableTransformer<HomeAction.ScrollStateChangedAction, HomeResult> { action ->
+    private val scrollStateChangeTransformer
+        get() = ObservableTransformer<HomeAction.ScrollStateChangedAction, HomeResult> { action ->
             action
                 .map { it.state }
                 .compose(scrollStateProcessor)
                 .map(HomeResult::FloatActionButtonVisibleResult)
         }
 
-    val actionProcessor: ObservableTransformer<HomeAction, HomeResult> =
-        ObservableTransformer { actions ->
+    val actionProcessor: ObservableTransformer<HomeAction, HomeResult>
+        get() = ObservableTransformer { actions ->
             actions.publish { shared ->
                 Observable.mergeArray(
                     shared.ofType(HomeAction.InitialAction::class.java).compose<HomeResult>(initialActionTransformer),
@@ -92,4 +96,14 @@ class HomeActionProcessorHolder(
                 ).mergeWith(receivedEventsLoadingEventSubject.hide())
             }
         }
+
+    fun onViewModelCleared() {
+        if (mViewModelClearEventPublisher.hasComplete())
+            throw IllegalStateException("can't call onViewModelCleared() repeatedly.")
+
+        mViewModelClearEventPublisher.onNext(0)
+        mViewModelClearEventPublisher.onComplete()
+
+        receivedEventsLoadingEventSubject.onComplete()
+    }
 }

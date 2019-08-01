@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.qingmei2.mvi.base.viewmodel.BaseViewModel
 import com.github.qingmei2.mvi.ext.reactivex.notOfType
-import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
@@ -143,6 +142,11 @@ class ReposViewModel(
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        actionProcessorHolder.onViewModelCleared()
+    }
 }
 
 class ReposViewModelFactory(
@@ -153,7 +157,4 @@ class ReposViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ReposViewModel(actionProcessorHolder) as T
     }
-
-    companion object :
-        SingletonHolderSingleArg<ReposViewModelFactory, ReposActionProcessorHolder>(::ReposViewModelFactory)
 }

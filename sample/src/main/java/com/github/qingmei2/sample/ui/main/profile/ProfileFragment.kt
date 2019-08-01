@@ -13,19 +13,14 @@ import com.github.qingmei2.sample.utils.toast
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_profile.*
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
+import javax.inject.Inject
 
 class ProfileFragment : BaseFragment<ProfileIntent, ProfileViewState>() {
 
-    override val kodein: Kodein = Kodein.lazy {
-        extend(parentKodein)
-        import(profileKodeinModule)
-    }
-
     override val layoutId: Int = R.layout.fragment_profile
 
-    private val mViewModel: ProfileViewModel by instance()
+    @Inject
+    lateinit var mViewModel: ProfileViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

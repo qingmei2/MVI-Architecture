@@ -56,9 +56,9 @@ class LoginViewModel(
 
     private val specialEventProcessor: io.reactivex.functions.Function<LoginViewState, ObservableSource<LoginViewState>>
         get() = io.reactivex.functions.Function { state ->
-            when (state.uiEvents == null) {
-                true -> Observable.just(state)
-                false -> Observable.just(state, state.copy(uiEvents = null))
+            when (state.uiEvents != null || state.errors != null) {
+                true -> Observable.just(state, state.copy(uiEvents = null, errors = null))
+                false -> Observable.just(state)
             }
         }
 
@@ -118,13 +118,9 @@ class LoginViewModel(
 }
 
 @Suppress("UNCHECKED_CAST")
-class LoginViewModelFactory private constructor(
+class LoginViewModelFactory(
     private val processorHolder: LoginActionProcessorHolder
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        LoginViewModel(processorHolder) as T
-
-    companion object :
-        SingletonHolderSingleArg<LoginViewModelFactory, LoginActionProcessorHolder>(::LoginViewModelFactory)
-}
+        LoginViewModel(processorHolder) as T}

@@ -16,8 +16,7 @@ import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_home.*
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
+import javax.inject.Inject
 
 class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
 
@@ -28,16 +27,12 @@ class HomeFragment : BaseFragment<HomeIntent, HomeViewState>() {
     private val mRefreshSubject: PublishSubject<HomeIntent.RefreshIntent> =
         PublishSubject.create()
 
-    override val kodein: Kodein = Kodein.lazy {
-        extend(parentKodein)
-        import(homeKodeinModule)
-    }
-
     override val layoutId: Int = R.layout.fragment_home
 
-    private val mViewModel: HomeViewModel by instance()
-
-    private val mSchedulerProvider: SchedulerProvider by instance()
+    @Inject
+    lateinit var mViewModel: HomeViewModel
+    @Inject
+    lateinit var mSchedulerProvider: SchedulerProvider
 
     private val mAdapter: HomePagedListAdapter = HomePagedListAdapter()
 

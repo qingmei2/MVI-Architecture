@@ -1,32 +1,23 @@
 package com.github.qingmei2.sample.base
 
 import android.app.Application
-import android.content.Context
 import com.facebook.stetho.Stetho
 import com.github.qingmei2.mvi.logger.initLogger
 import com.github.qingmei2.sample.BuildConfig
-import com.github.qingmei2.sample.di.*
+import com.github.qingmei2.sample.di.DaggerAppComponent
 import com.squareup.leakcanary.LeakCanary
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.androidModule
-import org.kodein.di.android.x.androidXModule
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.singleton
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
+import javax.inject.Inject
 
-open class BaseApplication : Application(), KodeinAware {
+open class BaseApplication : Application(),HasAndroidInjector {
 
-    override val kodein: Kodein = Kodein.lazy {
-        bind<Context>() with singleton { this@BaseApplication }
-        import(androidModule(this@BaseApplication))
-        import(androidXModule(this@BaseApplication))
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
 
-        import(serviceModule)
-        import(dbModule)
-        import(httpClientModule)
-        import(prefsModule)
-        import(schedulersModule)
-        import(globalRepositoryModule)
+    override fun androidInjector(): AndroidInjector<Any> {
+        return dispatchingAndroidInjector
     }
 
     override fun onCreate() {
@@ -34,7 +25,12 @@ open class BaseApplication : Application(), KodeinAware {
         INSTANCE = this
 
         initLogger(BuildConfig.DEBUG)
-        
+
+        DaggerAppComponent.builder()
+            .application(this)
+            .build()
+            .inject(this)
+
         if (BuildConfig.DEBUG) {
             initStetho()
             initLeakCanary()

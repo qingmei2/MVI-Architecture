@@ -1,13 +1,23 @@
 package com.github.qingmei2.mvi.base.view.fragment
 
-import androidx.fragment.app.Fragment
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.closestKodein
-import org.kodein.di.generic.kcontext
+import android.content.Context
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
-abstract class InjectionFragment : AutoDisposeFragment(), KodeinAware {
+abstract class InjectionFragment : AutoDisposeFragment(), HasAndroidInjector {
 
-    protected val parentKodein by closestKodein()
+    @Inject
+    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
-    override val kodeinContext = kcontext<Fragment>(this)
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun androidInjector(): AndroidInjector<Any> {
+        return androidInjector
+    }
 }

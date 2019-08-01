@@ -1,17 +1,10 @@
 package com.github.qingmei2.sample.utils
 
-import com.github.qingmei2.sample.base.BaseApplication
 import com.google.gson.Gson
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.generic.instance
 
-object GsonUtils : KodeinAware {
+object GsonUtils {
 
-    override val kodein: Kodein
-        get() = BaseApplication.INSTANCE.kodein
-
-    val INSTANCE: Gson by instance()
+    val INSTANCE: Gson = Gson()
 }
 
 fun <T> T.toJson(): String {

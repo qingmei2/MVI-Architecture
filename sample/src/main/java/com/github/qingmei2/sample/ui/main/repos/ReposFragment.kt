@@ -19,9 +19,8 @@ import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_repos.*
-import org.kodein.di.Kodein
-import org.kodein.di.generic.instance
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
 
@@ -34,13 +33,10 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
     private val mScrollStateChangedSubject: PublishSubject<ReposIntent.ScrollStateChangedIntent> =
         PublishSubject.create()
 
-    override val kodein: Kodein = Kodein.lazy {
-        extend(parentKodein)
-        import(reposKodeinModule)
-    }
-
-    private val mViewModel: ReposViewModel by instance()
-    private val mSchedulerProvider: SchedulerProvider by instance()
+    @Inject
+    lateinit var mViewModel: ReposViewModel
+    @Inject
+    lateinit var mSchedulerProvider: SchedulerProvider
 
     override val layoutId: Int = R.layout.fragment_repos
 

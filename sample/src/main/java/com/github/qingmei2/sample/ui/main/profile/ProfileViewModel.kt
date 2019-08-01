@@ -90,7 +90,4 @@ class ProfileViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ProfileViewModel(actionProcessorHolder) as T
     }
-
-    companion object :
-        SingletonHolderSingleArg<ProfileViewModelFactory, ProfileActionProcessorHolder>(::ProfileViewModelFactory)
 }

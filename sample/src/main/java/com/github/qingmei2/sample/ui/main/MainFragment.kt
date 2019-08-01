@@ -16,11 +16,13 @@ import com.jakewharton.rxbinding3.material.itemSelections
 import com.jakewharton.rxbinding3.viewpager.pageSelections
 import com.uber.autodispose.autoDisposable
 import kotlinx.android.synthetic.main.fragment_main.*
+import javax.inject.Inject
 
 @SuppressLint("CheckResult")
 class MainFragment : AutoDisposeFragment() {
 
-    private lateinit var mViewModel: MainViewModel
+    @Inject
+    lateinit var mViewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_main, container, false)

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.qingmei2.mvi.base.viewmodel.BaseViewModel
 import com.github.qingmei2.mvi.ext.reactivex.notOfType
-import com.github.qingmei2.mvi.util.SingletonHolderSingleArg
 import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
@@ -64,6 +63,11 @@ class HomeViewModel(
             }
         }
 
+    override fun onCleared() {
+        super.onCleared()
+        actionProcessorHolder.onViewModelCleared()
+    }
+
     companion object {
 
         private val reducer = BiFunction { previousState: HomeViewState, result: HomeResult ->
@@ -108,13 +112,10 @@ class HomeViewModel(
 }
 
 @Suppress("UNCHECKED_CAST")
-class HomeViewModelFactory private constructor(
+class HomeViewModelFactory constructor(
     private val actionProcessorHolder: HomeActionProcessorHolder
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
         HomeViewModel(actionProcessorHolder) as T
-
-    companion object :
-        SingletonHolderSingleArg<HomeViewModelFactory, HomeActionProcessorHolder>(::HomeViewModelFactory)
 }
