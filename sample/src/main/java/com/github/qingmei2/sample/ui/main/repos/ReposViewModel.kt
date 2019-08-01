@@ -20,8 +20,6 @@ class ReposViewModel(
     private val intentsSubject: PublishSubject<ReposIntent> = PublishSubject.create()
     private val statesObservable: Observable<ReposViewState> = compose()
 
-    private val sortOptionSubject: BehaviorSubject<String> = BehaviorSubject.create()
-
     private val intentFilter: ObservableTransformer<ReposIntent, ReposIntent>
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
@@ -36,10 +34,8 @@ class ReposViewModel(
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
                 Observable.mergeArray(
-                    shared.ofType(ReposIntent.InitialIntent::class.java)
-                        .doOnNext { sortOptionSubject.onNext(sortByUpdate) },
-                    shared.ofType(ReposIntent.SortTypeChangeIntent::class.java)
-                        .doOnNext { sortOptionSubject.onNext(it.sort) },
+                    shared.ofType(ReposIntent.InitialIntent::class.java),
+                    shared.ofType(ReposIntent.SortTypeChangeIntent::class.java),
                     shared.ofType(ReposIntent.RefreshIntent::class.java),
                     shared.ofType(ReposIntent.ScrollStateChangedIntent::class.java),
                     shared.ofType(ReposIntent.ScrollToTopIntent::class.java)
@@ -67,10 +63,6 @@ class ReposViewModel(
             .distinctUntilChanged()
             .replay(1)
             .autoConnect(0)
-    }
-
-    private fun currentSortOptions(): Observable<String> {
-        return sortOptionSubject.distinctUntilChanged().take(1)
     }
 
     private fun actionFromIntent(intent: ReposIntent): ReposAction {
