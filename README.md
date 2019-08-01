@@ -50,7 +50,7 @@
 
 ### 依赖注入
 
-* [Kodein-DI: Painless Kotlin Dependency Injection](https://github.com/Kodein-Framework/Kodein-DI)
+* [dagger-android: A fast dependency injector for Android and Java.](https://github.com/google/dagger)
 
 ### 响应式库
 
