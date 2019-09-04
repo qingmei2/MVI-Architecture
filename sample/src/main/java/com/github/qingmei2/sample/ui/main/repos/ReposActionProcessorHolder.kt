@@ -5,6 +5,7 @@ import androidx.paging.PagedList
 import com.github.qingmei2.mvi.ext.reactivex.flatMapErrorActionObservable
 import com.github.qingmei2.sample.entity.Repo
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
+import com.github.qingmei2.sample.manager.UserManager
 import com.github.qingmei2.sample.repository.UserInfoRepository
 import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
 import com.github.qingmei2.sample.ui.main.repos.ReposViewModel.Companion.sortByUpdate
@@ -47,7 +48,7 @@ class ReposActionProcessorHolder(
         }
 
     private fun onZeroItemsLoaded() {
-        repository.queryReposByPage(userRepository.username, repoSortTypeSubject.blockingFirst(), 1)
+        repository.queryReposByPage(UserManager.INSTANCE.login, repoSortTypeSubject.blockingFirst(), 1)
             .toObservable()
             .map<ReposResult.ReposPageResult> { ReposResult.ReposPageResult.Success(true) }
             .onErrorReturn { ReposResult.ReposPageResult.Failure(true, it) }
@@ -60,7 +61,7 @@ class ReposActionProcessorHolder(
         val currentPageIndex = (itemAtEnd.indexInSortResponse / 15) + 1
         val nextPageIndex = currentPageIndex + 1
 
-        repository.queryReposByPage(userRepository.username, repoSortTypeSubject.blockingFirst(), nextPageIndex)
+        repository.queryReposByPage(UserManager.INSTANCE.login, repoSortTypeSubject.blockingFirst(), nextPageIndex)
             .toObservable()
             .map<ReposResult.ReposPageResult> { ReposResult.ReposPageResult.Success(true) }
             .onErrorReturn { ReposResult.ReposPageResult.Failure(true, it) }
