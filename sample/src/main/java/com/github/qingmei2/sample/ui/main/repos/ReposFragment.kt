@@ -131,7 +131,7 @@ class ReposFragment : BaseFragment<ReposIntent, ReposViewState>() {
         val mAdapter = mRecyclerView.adapter as ReposPagedListAdapter?
         when (mAdapter == null) {
             true -> {
-                val adapter = ReposPagedListAdapter(this)
+                val adapter = ReposPagedListAdapter()
                 adapter.observeEvent()
                     .doOnNext { event ->
                         when (event) {

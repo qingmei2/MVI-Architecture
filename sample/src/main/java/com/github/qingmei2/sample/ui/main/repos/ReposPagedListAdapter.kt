@@ -10,9 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import com.github.qingmei2.mvi.base.view.adapter.AutoDisposePagedListAdapter
 import com.github.qingmei2.mvi.base.view.adapter.AutoDisposeViewHolder
 import com.github.qingmei2.mvi.image.GlideApp
 import com.github.qingmei2.sample.R
@@ -23,9 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-class ReposPagedListAdapter(
-    lifecycleOwner: LifecycleOwner
-) : AutoDisposePagedListAdapter<Repo, ReposPagedListViewHolder>(lifecycleOwner, diffCallback) {
+class ReposPagedListAdapter : PagedListAdapter<Repo, ReposPagedListViewHolder>(diffCallback) {
 
     private val eventSubject: PublishSubject<RepoPagedListItemEvent> = PublishSubject.create()
 
@@ -35,7 +32,6 @@ class ReposPagedListAdapter(
         ReposPagedListViewHolder.create(parent)
 
     override fun onBindViewHolder(holder: ReposPagedListViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
         holder.binds(getItem(position)!!, eventSubject)
     }
 
