@@ -5,6 +5,7 @@ import androidx.paging.PagedList
 import com.github.qingmei2.mvi.ext.reactivex.flatMapErrorActionObservable
 import com.github.qingmei2.sample.entity.ReceivedEvent
 import com.github.qingmei2.sample.http.scheduler.SchedulerProvider
+import com.github.qingmei2.sample.manager.UserManager
 import com.github.qingmei2.sample.repository.UserInfoRepository
 import com.github.qingmei2.sample.ui.main.common.scrollStateProcessor
 import io.reactivex.Observable
@@ -51,7 +52,7 @@ class HomeActionProcessorHolder(
         }
 
     private fun onZeroItemsLoaded() {
-        repository.queryReceivedEventsByPage(userRepository.username, 1)
+        repository.queryReceivedEventsByPage(UserManager.INSTANCE.login, 1)
             .map<HomeResult.LoadingPageResult> { HomeResult.LoadingPageResult.Success(true) }
             .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
             .startWith(HomeResult.LoadingPageResult.InFlight(true))
@@ -63,7 +64,7 @@ class HomeActionProcessorHolder(
     private fun onItemAtEndLoaded(itemAtEnd: ReceivedEvent) {
         val currentPageIndex = (itemAtEnd.indexInResponse / 15) + 1
         val nextPageIndex = currentPageIndex + 1
-        repository.queryReceivedEventsByPage(userRepository.username, nextPageIndex)
+        repository.queryReceivedEventsByPage(UserManager.INSTANCE.login, nextPageIndex)
             .map<HomeResult.LoadingPageResult> { HomeResult.LoadingPageResult.Success(true) }
             .onErrorReturn { HomeResult.LoadingPageResult.Failure(true, it) }
             .toObservable()
