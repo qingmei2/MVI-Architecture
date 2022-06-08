@@ -1,4 +1,4 @@
-# MVI-Rhine
+# MVI-Architecture
 
 #### [English Documentation](https://github.com/qingmei2/MVI-Rhine/blob/master/README_EN.md) | 中文文档
 
@@ -76,7 +76,7 @@
 
 ### 工具/插件
 
-* [MVI-Rhine-Template: 代码模板插件，一键生成MVI所有kt模板代码](https://github.com/qingmei2/MVI-Rhine-Template)
+* [MVI-Architecture-Template: 代码模板插件，一键生成MVI所有kt模板代码](https://github.com/qingmei2/MVI-Architecture-Template))
 
 <a id="usage"></a>
 
